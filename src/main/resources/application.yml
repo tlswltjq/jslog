@@ -28,3 +28,6 @@ logging:
     org.hibernate.orm.jdbc.bind: TRACE
     org.hibernate.orm.jdbc.extract: TRACE
     org.springframework.transaction.interceptor: TRACE
+
+app:
+  admin-api-key: NfMHpCLukCZL34GrC/K95fekVdpqJ4dQp/HiwmnXK1w=
