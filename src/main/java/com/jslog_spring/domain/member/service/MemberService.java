@@ -29,7 +29,7 @@ public class MemberService {
         Member member = Member.builder()
                 .username(username)
                 .password(password)
-                .password(nickname)
+                .nickname(nickname)
                 .build();
         return memberRepository.save(member);
     }
