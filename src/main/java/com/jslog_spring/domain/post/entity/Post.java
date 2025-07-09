@@ -1,10 +1,8 @@
 package com.jslog_spring.domain.post.entity;
 
+import com.jslog_spring.domain.member.entity.Member;
 import com.jslog_spring.global.jpa.entity.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Lob;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,6 +16,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class Post extends BaseEntity {
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Member author;
 
     @Column(nullable = false, length = 255)
     private String title;

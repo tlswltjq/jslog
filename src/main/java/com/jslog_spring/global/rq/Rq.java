@@ -2,6 +2,7 @@ package com.jslog_spring.global.rq;
 
 import com.jslog_spring.global.exception.ServiceException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,7 @@ public class Rq {
     private String adminApiKey;
 
     private final HttpServletRequest req;
+    private final HttpServletResponse resp;
 
     public void checkAdminAuth() {
         String headerAuthorization = req.getHeader("Authorization");
@@ -41,4 +43,5 @@ public class Rq {
         String providedApiKey = headerAuthorization.substring("Bearer ".length()).trim();
         return adminApiKey.equals(providedApiKey);
     }
+
 }
