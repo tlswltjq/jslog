@@ -2,6 +2,7 @@ package com.jslog_spring.domain.member.controller;
 
 import com.jslog_spring.domain.member.entity.Member;
 import com.jslog_spring.domain.member.service.MemberService;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -30,6 +32,7 @@ class ApiV1MemberControllerTest {
 
     @Test
     @DisplayName("회원가입")
+    // POST /api/v1/members
     void joinTest() throws Exception {
         String username = "testuser";
         String password = "testpassword";
@@ -60,4 +63,54 @@ class ApiV1MemberControllerTest {
                 .andExpect(jsonPath("$.data.modifiedDate").value(member.getModifyDate().toString()))
                 .andExpect(jsonPath("$.data.nickname").value(member.getNickname()));
     }
+
+    @Test
+    @DisplayName("내 정보 조회")
+    // GET /api/v1/members/me
+    void findMySelfTest() {
+        fail();
+    }
+
+    @Test
+    @DisplayName("회원 단건 조회")
+    // GET /api/v1/members/{id}
+    void findMemberTest() {
+        fail();
+    }
+
+    @Test
+    @DisplayName("회원 다건 조회")
+    // GET /api/v1/members
+    void findMembersTest() {
+        fail();
+    }
+
+    @Test
+    @DisplayName("로그인")
+    // POST /api/v1/members/login
+    void loginTest() {
+        fail();
+    }
+
+    @Test
+    @DisplayName("로그아웃")
+    // POST /api/v1/members/logout
+    void logoutTest() {
+        fail();
+    }
+
+    @Test
+    @DisplayName("회원 정보 수정")
+    // PATCH /api/v1/members/me
+    void updateMemberInfo() {
+        fail();
+    }
+
+    @Test
+    @DisplayName("회원 탈퇴")
+    // DELETE /api/v1/members/me
+    void deleteMemberTest() {
+        fail();
+    }
+
 }
