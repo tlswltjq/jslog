@@ -7,7 +7,7 @@ import lombok.*;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED) // 1. 접근제어자 변경
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseEntity {
     @Column(unique = true, nullable = false)
     private String username;
@@ -16,7 +16,7 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private Member(String username, String password, String name) {
         this.username = username;
         this.password = password;
