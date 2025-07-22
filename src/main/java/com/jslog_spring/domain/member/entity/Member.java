@@ -2,27 +2,38 @@ package com.jslog_spring.domain.member.entity;
 
 import com.jslog_spring.global.jpa.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 
 @Entity
 @Getter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED) // 1. 접근제어자 변경
 public class Member extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
     @Column(unique = true, nullable = false)
     private String username;
     @Column(nullable = false)
     private String password;
     @Column(nullable = false)
     private String name;
+
+    @Builder
+    private Member(String username, String password, String name) {
+        this.username = username;
+        this.password = password;
+        this.name = name;
+    }
+
+    public static Member create(String username, String password, String name) {
+        if (username == null || username.isBlank()) {
+            throw new IllegalArgumentException("Username cannot be empty.");
+        }
+
+        return Member.builder()
+                .username(username)
+                .password(password)
+                .name(name)
+                .build();
+    }
 
     public void updateName(String name) {
         this.name = name;
