@@ -8,16 +8,12 @@ import org.junit.jupiter.api.Test;
 class MemberTest {
     @Test
     @DisplayName("아이디, 비밀번호, 이름을 입력받아 Member 객체를 생성한다.")
-    void memberCreation(){
+    void memberCreation() {
         String username = "testUsername";
         String password = "testPassword";
         String name = "testName";
 
-        Member member = Member.builder()
-                .username(username)
-                .password(password)
-                .name(name)
-                .build();
+        Member member = Member.create(username, password, name);
 
         Assertions.assertThat(member).isNotNull();
         Assertions.assertThat(member.getUsername()).isEqualTo(username);
@@ -27,17 +23,13 @@ class MemberTest {
 
     @Test
     @DisplayName("새 이름을 입력받아 Member 객체의 이름을 업데이트한다.")
-    void memberUpdate(){
+    void memberUpdate() {
         String username = "testUsername";
         String password = "testPassword";
         String name = "testName";
         String newName = "updatedName";
 
-        Member member = Member.builder()
-                .username(username)
-                .password(password)
-                .name(name)
-                .build();
+        Member member = Member.create(username, password, name);
 
         member.updateName(newName);
         Assertions.assertThat(member.getName()).isEqualTo(newName);
