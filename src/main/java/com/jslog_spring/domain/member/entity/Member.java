@@ -1,4 +1,4 @@
-package com.jslog_spring.domain.member;
+package com.jslog_spring.domain.member.entity;
 
 import com.jslog_spring.global.jpa.entity.BaseEntity;
 import jakarta.persistence.Entity;
