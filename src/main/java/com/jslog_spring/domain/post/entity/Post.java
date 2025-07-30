@@ -11,15 +11,22 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Post extends BaseEntity {
+    private int authorId;
     private String title;
     private String content;
 
-    @Builder(access = AccessLevel.PRIVATE)
-    public Post(String title, String content) {
+    public Post(int authorId, String title, String content) {
+        this.authorId = authorId;
         this.title = title;
         this.content = content;
     }
-    public static Post create(String title, String content) {
+
+    @Builder(access = AccessLevel.PRIVATE)
+
+    public static Post create(int authorId, String title, String content) {
+        if (authorId <= 0) {
+            throw new IllegalArgumentException("AuthorId must be positive.");
+        }
         if (title == null || title.isBlank()) {
             throw new IllegalArgumentException("Title cannot be empty.");
         }
