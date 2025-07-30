@@ -6,23 +6,23 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PostService {
-    Post createPost(int authorId, String title, String content);
+    Post createPost(Long authorId, String title, String content);
 
-    Post updatePost(int postId, String title, String content);
+    Post updatePost(Long postId, String title, String content);
 
-    void deletePost(int postId);
+    void deletePost(Long postId);
 
-    Optional<Post> getPost(int postId);
+    Optional<Post> getPost(Long postId);
 
     List<Post> getAllPosts(int page, int size);
 
-    List<Post> getPostsByAuthor(int authorId, int page, int size);
+    List<Post> getPostsByAuthor(Long authorId, int page, int size);
 
     List<Post> searchPosts(String keyword, int page, int size);
 
-    List<Post> searchPostsByAuthor(int authorId, String keyword, int page, int size);
+    List<Post> searchPostsByAuthor(Long authorId, String keyword, int page, int size);
 
-    long countPostsByAuthor(int authorId);
+    long countPostsByAuthor(Long authorId);
 
     long countAllPosts();
 
