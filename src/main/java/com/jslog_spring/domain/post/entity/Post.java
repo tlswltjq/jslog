@@ -11,19 +11,18 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Post extends BaseEntity {
-    private int authorId;
+    private Long authorId;
     private String title;
     private String content;
 
-    public Post(int authorId, String title, String content) {
+    public Post(Long authorId, String title, String content) {
         this.authorId = authorId;
         this.title = title;
         this.content = content;
     }
 
     @Builder(access = AccessLevel.PRIVATE)
-
-    public static Post create(int authorId, String title, String content) {
+    public static Post create(Long authorId, String title, String content) {
         if (authorId <= 0) {
             throw new IllegalArgumentException("AuthorId must be positive.");
         }
