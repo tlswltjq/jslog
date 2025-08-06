@@ -3,9 +3,12 @@ package com.jslog_spring.domain.post.service;
 import com.jslog_spring.domain.post.entity.Post;
 import com.jslog_spring.domain.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -18,41 +21,42 @@ public class PostServiceImpl implements PostService {
         return postRepository.save(newPost);
     }
 
-    public Post updatePost(Long postId, String title, String content) {
-        return null;
+    public Post updatePost(Long authorId, Long postId, String title, String content) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NoSuchElementException("Post not found"));
+        // TODO: authorId check
+        post.update(title, content);
+
+        return postRepository.save(post);
     }
 
-    public void deletePost(Long postId) {
-
+    public void deletePost(Long authorId, Long postId) {
+        if (!postRepository.existsByIdAndAuthorId(postId, authorId)) {
+            throw new NoSuchElementException("Post not found or author does not match");
+        }
+        postRepository.deleteById(postId);
     }
 
     public Optional<Post> getPost(Long postId) {
-        return Optional.empty();
+        return postRepository.findById(postId);
     }
 
-    public List<Post> getAllPosts(int page, int size) {
-        return List.of();
+    public Page<Post> getAllPosts(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return postRepository.findAll(pageable);
     }
 
-    public List<Post> getPostsByAuthor(Long authorId, int page, int size) {
-        return List.of();
+    public Page<Post> getPostsByAuthor(Long authorId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return postRepository.findByAuthorId(authorId, pageable);
     }
 
-    public List<Post> searchPosts(String keyword, int page, int size) {
-        return List.of();
+    public Page<Post> searchPosts(String keyword, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return postRepository.findByTitleContainingOrContentContaining(keyword, keyword, pageable);
     }
 
-    public List<Post> searchPostsByAuthor(Long authorId, String keyword, int page, int size) {
-        return List.of();
+    public Page<Post> searchPostsByAuthor(Long authorId, String keyword, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return postRepository.findByAuthorIdAndKeyword(authorId, keyword, pageable);
     }
-
-    public long countPostsByAuthor(Long authorId) {
-        return 0;
-    }
-
-    public long countAllPosts() {
-        return 0;
-    }
-
-
 }
