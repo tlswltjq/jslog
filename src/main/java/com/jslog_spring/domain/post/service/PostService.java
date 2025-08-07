@@ -3,8 +3,6 @@ package com.jslog_spring.domain.post.service;
 import com.jslog_spring.domain.post.entity.Post;
 import org.springframework.data.domain.Page;
 
-import java.util.Optional;
-
 public interface PostService {
     Post createPost(Long authorId, String title, String content);
 
@@ -12,7 +10,7 @@ public interface PostService {
 
     void deletePost(Long authorId, Long postId);
 
-    Optional<Post> getPost(Long postId);
+    Post getPost(Long postId);
 
     Page<Post> getAllPosts(int page, int size);
 
