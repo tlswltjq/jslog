@@ -36,8 +36,8 @@ public class PostServiceImpl implements PostService {
         postRepository.deleteById(postId);
     }
 
-    public Optional<Post> getPost(Long postId) {
-        return postRepository.findById(postId);
+    public Post getPost(Long postId) {
+        return postRepository.findById(postId).orElseThrow(()-> new NoSuchElementException("Post not found"));
     }
 
     public Page<Post> getAllPosts(int page, int size) {

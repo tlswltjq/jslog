@@ -12,7 +12,7 @@ public interface PostService {
 
     void deletePost(Long authorId, Long postId);
 
-    Optional<Post> getPost(Long postId);
+    Post getPost(Long postId);
 
     Page<Post> getAllPosts(int page, int size);
 
