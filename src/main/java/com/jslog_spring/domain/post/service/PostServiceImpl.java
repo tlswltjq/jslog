@@ -23,7 +23,10 @@ public class PostServiceImpl implements PostService {
 
     public Post updatePost(Long authorId, Long postId, String title, String content) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new NoSuchElementException("Post not found"));
-        // TODO: authorId check
+
+        if (!post.getAuthorId().equals(authorId)) {
+            throw new NoSuchElementException("Post not found or author does not match");
+        }
         post.update(title, content);
 
         return postRepository.save(post);
