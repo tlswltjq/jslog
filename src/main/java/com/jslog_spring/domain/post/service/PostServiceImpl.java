@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -32,11 +33,9 @@ public class PostServiceImpl implements PostService {
         return postRepository.save(post);
     }
 
-    public void deletePost(Long authorId, Long postId) {
-        if (!postRepository.existsByIdAndAuthorId(postId, authorId)) {
-            throw new NoSuchElementException("Post not found or author does not match");
-        }
-        postRepository.deleteById(postId);
+    @Transactional
+    public boolean deletePost(Long authorId, Long postId) {
+        return postRepository.deleteByIdAndAuthorId(postId, authorId);
     }
 
     public Post getPost(Long postId) {
