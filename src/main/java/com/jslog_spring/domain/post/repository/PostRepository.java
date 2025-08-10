@@ -13,9 +13,6 @@ import org.springframework.data.domain.Pageable;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
-    @Modifying
-    Boolean deleteByIdAndAuthorId(Long id, Long authorId);
-
     Page<Post> findByAuthorId(Long authorId, Pageable pageable);
 
     Page<Post> findByTitleContainingOrContentContaining(String keyword, String keyword2, Pageable pageable);

@@ -34,8 +34,16 @@ public class PostServiceImpl implements PostService {
     }
 
     @Transactional
-    public boolean deletePost(Long authorId, Long postId) {
-        return postRepository.deleteByIdAndAuthorId(postId, authorId);
+    public void deletePost(Long authorId, Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new NoSuchElementException("Post not found with id: " + postId));
+
+        if (!post.getAuthorId().equals(authorId)) {
+            //TODO : 에러타입 변경
+            throw new NoSuchElementException("Post not found or author does not match");
+        }
+
+        postRepository.delete(post);
     }
 
     public Post getPost(Long postId) {

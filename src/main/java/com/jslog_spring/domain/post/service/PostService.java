@@ -10,7 +10,7 @@ public interface PostService {
 
     Post updatePost(Long authorId, Long postId, String title, String content);
 
-    boolean deletePost(Long authorId, Long postId);
+    void deletePost(Long authorId, Long postId);
 
     Post getPost(Long postId);
 
