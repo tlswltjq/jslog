@@ -1,29 +1,25 @@
 package com.jslog_spring.domain.post.service;
 
 import com.jslog_spring.domain.post.entity.Post;
+import org.springframework.data.domain.Page;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface PostService {
     Post createPost(Long authorId, String title, String content);
 
-    Post updatePost(Long postId, String title, String content);
+    Post updatePost(Long authorId, Long postId, String title, String content);
 
-    void deletePost(Long postId);
+    void deletePost(Long authorId, Long postId);
 
-    Optional<Post> getPost(Long postId);
+    Post getPost(Long postId);
 
-    List<Post> getAllPosts(int page, int size);
+    Page<Post> getAllPosts(int page, int size);
 
-    List<Post> getPostsByAuthor(Long authorId, int page, int size);
+    Page<Post> getPostsByAuthor(Long authorId, int page, int size);
 
-    List<Post> searchPosts(String keyword, int page, int size);
+    Page<Post> searchPosts(String keyword, int page, int size);
 
-    List<Post> searchPostsByAuthor(Long authorId, String keyword, int page, int size);
-
-    long countPostsByAuthor(Long authorId);
-
-    long countAllPosts();
+    Page<Post> searchPostsByAuthor(Long authorId, String keyword, int page, int size);
 
 }

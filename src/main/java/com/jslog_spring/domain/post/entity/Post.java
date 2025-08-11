@@ -16,7 +16,7 @@ public class Post extends BaseEntity {
     private String content;
 
     @Builder(access = AccessLevel.PRIVATE)
-    public Post(Long authorId, String title, String content) {
+    private Post(Long authorId, String title, String content) {
         this.authorId = authorId;
         this.title = title;
         this.content = content;
