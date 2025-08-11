@@ -3,6 +3,8 @@ package com.jslog_spring.domain.post.service;
 import com.jslog_spring.domain.post.entity.Post;
 import org.springframework.data.domain.Page;
 
+import java.util.Optional;
+
 public interface PostService {
     Post createPost(Long authorId, String title, String content);
 
