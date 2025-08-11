@@ -39,7 +39,7 @@ public class PostServiceImpl implements PostService {
                 .orElseThrow(() -> new NoSuchElementException("Post not found with id: " + postId));
 
         if (!post.getAuthorId().equals(authorId)) {
-            //TODO : 에러타입 변경
+            //NOTE : 에러타입 변경할것
             throw new NoSuchElementException("Post not found or author does not match");
         }
 
