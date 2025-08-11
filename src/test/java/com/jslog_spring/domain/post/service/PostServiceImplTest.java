@@ -30,7 +30,7 @@ class PostServiceImplTest {
         String title = "Test Title";
         String content = "Test Content";
 
-        Post postToSave = new Post(authorId, title, content);
+        Post postToSave = Post.create(authorId, title, content);
         when(postRepository.save(any(Post.class))).thenReturn(postToSave);
 
         Post createdPost = postService.createPost(authorId, title, content);
@@ -48,7 +48,7 @@ class PostServiceImplTest {
         String title = "Test Title";
         String content = "Test Content";
 
-        Post post = new Post(authorId, title, content);
+        Post post = Post.create(authorId, title, content);
         when(postRepository.findById(post.getId())).thenReturn(java.util.Optional.of(post));
         when(postRepository.save(any(Post.class))).thenReturn(post);
 
@@ -78,7 +78,8 @@ class PostServiceImplTest {
         Long originalAuthorId = 2L;
         Long postId = 1L;
 
-        Post postByOther = new Post(originalAuthorId, "Test Title", "Test Content");
+        Post postByOther = Post.create(originalAuthorId, "Test Title", "Test Content");
+
         when(postRepository.findById(postId)).thenReturn(java.util.Optional.of(postByOther));
 
         assertThrows(NoSuchElementException.class, () -> {
