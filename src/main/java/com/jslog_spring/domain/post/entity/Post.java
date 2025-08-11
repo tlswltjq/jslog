@@ -15,13 +15,13 @@ public class Post extends BaseEntity {
     private String title;
     private String content;
 
-    public Post(Long authorId, String title, String content) {
+    @Builder(access = AccessLevel.PRIVATE)
+    private Post(Long authorId, String title, String content) {
         this.authorId = authorId;
         this.title = title;
         this.content = content;
     }
 
-    @Builder(access = AccessLevel.PRIVATE)
     public static Post create(Long authorId, String title, String content) {
         if (authorId <= 0) {
             throw new IllegalArgumentException("AuthorId must be positive.");
@@ -34,8 +34,18 @@ public class Post extends BaseEntity {
         }
 
         return Post.builder()
+                .authorId(authorId)
                 .title(title)
                 .content(content)
                 .build();
+    }
+
+    public void update(String title, String content) {
+        if (title != null && !title.isBlank()) {
+            this.title = title;
+        }
+        if (content != null && !content.isBlank()) {
+            this.content = content;
+        }
     }
 }
