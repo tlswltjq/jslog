@@ -2,9 +2,14 @@ package com.jslog_spring.domain.member.service;
 
 import com.jslog_spring.domain.member.entity.Member;
 import com.jslog_spring.domain.member.repository.MemberRepository;
+import com.jslog_spring.global.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,6 +19,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
 
     public Member join(String username, String password, String name) {
         String encodedPassword = passwordEncoder.encode(password);
@@ -35,5 +42,13 @@ public class MemberServiceImpl implements MemberService {
         }
         member.updateName(newName);
         return memberRepository.save(member);
+    }
+
+    public String signIn(String username, String password) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(username, password)
+        );
+
+        return jwtUtil.generateAccessToken(Map.of("username", authentication.getName()));
     }
 }
