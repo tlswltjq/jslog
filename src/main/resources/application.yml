@@ -40,3 +40,6 @@ logging:
 
 app:
   admin-api-key: NfMHpCLukCZL34GrC/K95fekVdpqJ4dQp/HiwmnXK1w=
+
+jwt:
+  secret-key : V3JkdEtza2ZKV1Jha1R5M3U2eUhuNDlNV2N6d2tCYjE5aU5zZlZLa3lGWT0=
