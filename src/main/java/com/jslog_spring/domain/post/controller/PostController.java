@@ -1,11 +1,13 @@
 package com.jslog_spring.domain.post.controller;
 
+import com.jslog_spring.domain.member.entity.Member;
 import com.jslog_spring.domain.post.dto.AllPostResponseDto;
 import com.jslog_spring.domain.post.dto.PostResponseDto;
 import com.jslog_spring.domain.post.entity.Post;
 import com.jslog_spring.domain.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/posts")
@@ -27,30 +29,30 @@ public class PostController {
         return PostResponseDto.fromEntity(post);
     }
 
-    record PostCreationRequest(Long authorId, String title, String content) {
+    record PostCreationRequest(String title, String content) {
     }
 
     @PostMapping
-    public PostResponseDto createPost(@RequestBody PostCreationRequest request) {
-        Post post = postService.createPost(request.authorId(), request.title(), request.content());
+    public PostResponseDto createPost(@AuthenticationPrincipal Member member, @RequestBody PostCreationRequest request) {
+        Post post = postService.createPost(member, request.title(), request.content());
         return PostResponseDto.fromEntity(post);
     }
 
-    record PostUpdateRequest(Long authorId, Long postId, String title, String content) {
+    record PostUpdateRequest(Long postId, String title, String content) {
     }
 
     @PutMapping
-    public PostResponseDto updatePost(@RequestBody PostUpdateRequest request) {
-        Post post = postService.updatePost(request.authorId(), request.postId(), request.title(), request.content());
+    public PostResponseDto updatePost(@AuthenticationPrincipal Member member, @RequestBody PostUpdateRequest request) {
+        Post post = postService.updatePost(member, request.postId(), request.title(), request.content());
         return PostResponseDto.fromEntity(post);
     }
 
-    record PostDeletionRequest(Long authorId, Long postId) {
+    record PostDeletionRequest(Long postId) {
     }
 
     @DeleteMapping
-    public String deletePost(@RequestBody PostDeletionRequest request) {
-        postService.deletePost(request.authorId(), request.postId());
+    public String deletePost(@AuthenticationPrincipal Member member, @RequestBody PostDeletionRequest request) {
+        postService.deletePost(member, request.postId());
         return "Deleted post";
     }
 }
