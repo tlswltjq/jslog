@@ -31,14 +31,11 @@ class PostServiceImplTest {
     @Mock
     private PostRepository postRepository;
 
-    @Mock
-    private MemberRepository memberRepository;
-
     @InjectMocks
     private PostServiceImpl postService;
 
     @Test
-    @DisplayName("작성자id, 제목, 내용으로 게시글 엔티티를 생성해낸다.")
+    @DisplayName("작성자 객체, 제목, 내용으로 게시글 엔티티를 생성해낸다.")
     void postCreationTest() {
         Member member = MemberFixture.createMemberWithId(1L);
         String title = "Test Title";
@@ -46,10 +43,9 @@ class PostServiceImplTest {
 
         Post postToSave = PostFixture.createPost(member);
 
-        when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
         when(postRepository.save(any(Post.class))).thenReturn(postToSave);
 
-        Post createdPost = postService.createPost(member.getId(), title, content);
+        Post createdPost = postService.createPost(member, title, content);
 
         assertNotNull(createdPost);
         assertEquals(member.getId(), createdPost.getMember().getId());
@@ -58,17 +54,15 @@ class PostServiceImplTest {
     }
 
     @Test
-    @DisplayName("요청자의 id와 게시글 id이 게시글의 authorId와 postId가 일치하는 경우 게시글을 수정한다.")
+    @DisplayName("요청자 객체와 게시글 id가 게시글의 author와 postId가 일치하는 경우 게시글을 수정한다.")
     void postUpdateTest() {
-        Long authorId = 1L;
         Long postId = 1L;
-        Member member = MemberFixture.createMemberWithId(authorId);
-        Post post = PostFixture.createPostWithId(postId, member); // 실제 Post 객체
+        Member member = MemberFixture.createMemberWithId(1L);
+        Post post = PostFixture.createPostWithId(postId, member);
 
-        when(memberRepository.findById(authorId)).thenReturn(Optional.of(member));
         when(postRepository.findById(postId)).thenReturn(Optional.of(post));
 
-        postService.updatePost(authorId, postId, "Updated Title", "Updated Content");
+        postService.updatePost(member, postId, "Updated Title", "Updated Content");
 
         verify(postRepository).save(post);
         assertEquals("Updated Title", post.getTitle());
@@ -78,18 +72,18 @@ class PostServiceImplTest {
     @Test
     @DisplayName("수정하려는 게시글이 존재하지 않는다면 예외를 발생시킨다.")
     void postUpdateTest_NotFound() {
-        Long authorId = 1L;
         Long postId = 999L;
+        Member dummyMember = MemberFixture.createMemberWithId(1L);
 
         when(postRepository.findById(postId)).thenReturn(java.util.Optional.empty());
 
         assertThrows(NoSuchElementException.class, () -> {
-            postService.updatePost(authorId, postId, "Updated Title", "Updated Content");
+            postService.updatePost(dummyMember, postId, "Updated Title", "Updated Content");
         });
     }
 
     @Test
-    @DisplayName("작성자와 authorId가 다르면 예외를 발생시킨다.")
+    @DisplayName("요청자 객체와 게시글의 author가 다르면 예외를 발생시킨다.")
     void postUpdateTest_AuthorMismatch() {
         Member requestingMember = MemberFixture.createMemberWithId(1L);
         Member originalMember = MemberFixture.createMemberWithId(2L);
@@ -100,12 +94,12 @@ class PostServiceImplTest {
         when(postRepository.findById(postId)).thenReturn(java.util.Optional.of(post));
 
         assertThrows(NoSuchElementException.class, () -> {
-            postService.updatePost(requestingMember.getId(), postId, "Test Title", "Test Content");
+            postService.updatePost(requestingMember, postId, "Test Title", "Test Content");
         });
     }
 
     @Test
-    @DisplayName("작성자 아이디와 게시글 아이디로 게시글을 삭제한다.")
+    @DisplayName("작성자 객체와 게시글 아이디로 게시글을 삭제한다.")
     void postDeleteTest() {
         Member member = MemberFixture.createMemberWithId(1L);
         Long postId = 1L;
@@ -113,29 +107,28 @@ class PostServiceImplTest {
         Post post = PostFixture.createPostWithId(postId, member);
 
         when(postRepository.findById(postId)).thenReturn(java.util.Optional.of(post));
-        when(memberRepository.findById(member.getId())).thenReturn(Optional.of(member));
         doNothing().when(postRepository).delete(any(Post.class));
 
-        postService.deletePost(member.getId(), postId);
+        postService.deletePost(member, postId);
 
         verify(postRepository).delete(any(Post.class));
     }
 
     @Test
-    @DisplayName("작성자 아이디와 게시글 아이디로 게시글을 삭제할 때, 게시글이 존재하지 않으면 예외를 발생시킨다.")
+    @DisplayName("작성자 객체와 게시글 아이디로 게시글을 삭제할 때, 게시글이 존재하지 않으면 예외를 발생시킨다.")
     void postDeleteTest_NotFound() {
-        Long authorId = 1L;
         Long postId = 999L;
+        Member dummyMember = MemberFixture.createMemberWithId(1L);
 
         when(postRepository.findById(postId)).thenReturn(java.util.Optional.empty());
 
         assertThrows(NoSuchElementException.class, () -> {
-            postService.deletePost(authorId, postId);
+            postService.deletePost(dummyMember, postId);
         });
     }
 
     @Test
-    @DisplayName("작성자 아이디와 게시글 아이디로 게시글을 삭제할 때, 게시글의 작성자 아이디가 일치하지 않으면 예외를 발생시킨다.")
+    @DisplayName("작성자 객체와 게시글 아이디로 게시글을 삭제할 때, 게시글의 작성자 객체가 일치하지 않으면 예외를 발생시킨다.")
     void postDeleteTest_AuthorMismatch() {
         Member requestingMember = MemberFixture.createMemberWithId(1L);
         Member originalMember = MemberFixture.createMemberWithId(2L);
@@ -146,7 +139,7 @@ class PostServiceImplTest {
         when(postRepository.findById(postId)).thenReturn(java.util.Optional.of(post));
 
         assertThrows(NoSuchElementException.class, () -> {
-            postService.deletePost(requestingMember.getId(), postId);
+            postService.deletePost(requestingMember, postId);
         });
     }
 
@@ -208,7 +201,7 @@ class PostServiceImplTest {
     }
 
     @Test
-    @DisplayName("특정 작성자의 게시글을 페이지 단위로 조회한다.")
+    @DisplayName("특정 작성자 객체의 게시글을 페이지 단위로 조회한다.")
     void getPostsByAuthorTest() {
         Member member = MemberFixture.createMemberWithId(1L);
         
@@ -223,10 +216,8 @@ class PostServiceImplTest {
         Page<Post> postPage = new PageImpl<>(postList, pageable, postList.size());
 
         when(postRepository.findByMember(member, pageable)).thenReturn(postPage);
-        when(memberRepository.findById(member.getId())).thenReturn(Optional.of(member));
-        Page<Post> resultPage = postService.getPostsByAuthor(member.getId(), page, size);
+        Page<Post> resultPage = postService.getPostsByAuthor(member, page, size);
 
-        // then
         assertNotNull(resultPage);
         assertEquals(2, resultPage.getTotalElements());
         assertEquals("Author1 Post 1", resultPage.getContent().get(0).getTitle());
@@ -260,7 +251,7 @@ class PostServiceImplTest {
     }
 
     @Test
-    @DisplayName("특정 작성자의 게시글을 키워드로 검색하여 페이지 단위로 조회한다.")
+    @DisplayName("특정 작성자 객체의 게시글을 키워드로 검색하여 페이지 단위로 조회한다.")
     void searchPostsByAuthorTest() {
         Member member = MemberFixture.createMemberWithId(1L);
         String keyword = "special";
@@ -274,8 +265,7 @@ class PostServiceImplTest {
         Page<Post> postPage = new PageImpl<>(postList, pageable, postList.size());
 
         when(postRepository.findByMemberAndKeyword(member, keyword, pageable)).thenReturn(postPage);
-        when(memberRepository.findById(member.getId())).thenReturn(Optional.of(member));
-        Page<Post> resultPage = postService.searchPostsByAuthor(member.getId(), keyword, page, size);
+        Page<Post> resultPage = postService.searchPostsByAuthor(member, keyword, page, size);
 
         assertNotNull(resultPage);
         assertEquals(1, resultPage.getTotalElements());
