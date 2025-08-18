@@ -1,10 +1,12 @@
 package com.jslog_spring.domain.member.controller;
 
+import com.jslog_spring.domain.member.entity.Member;
 import com.jslog_spring.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -39,8 +41,8 @@ public class MemberController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<String> getMe() {
-        return ResponseEntity.ok("마이페이지는 아직 구현되지 않았습니다.");
+    public ResponseEntity<String> getMe(@AuthenticationPrincipal Member member) {
+        return ResponseEntity.ok(member.getName()+ "의 마이페이지.");
     }
 
 }
