@@ -1,85 +1,58 @@
 package com.jslog_spring.domain.post.service;
 
-import com.jslog_spring.domain.member.entity.Member;
-import com.jslog_spring.domain.member.repository.MemberRepository;
 import com.jslog_spring.domain.post.entity.Post;
 import com.jslog_spring.domain.post.repository.PostRepository;
-import com.jslog_spring.domain.post.service.PostService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.NoSuchElementException;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
-    private final MemberRepository memberRepository;
 
     public Post createPost(Long authorId, String title, String content) {
-        Member author = memberRepository.findById(authorId)
-                .orElseThrow(() -> new NoSuchElementException("Member not found"));
-        Post newPost = Post.create(author, title, content);
+        Post newPost = Post.create(authorId, title, content);
         return postRepository.save(newPost);
     }
 
-    public Post updatePost(Long authorId, Long postId, String title, String content) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new NoSuchElementException("Post not found"));
-        Member member = memberRepository.findById(authorId)
-                .orElseThrow(() -> new NoSuchElementException("Member not found"));
-
-        if (!post.getMember().getId().equals(member.getId())) {
-            throw new NoSuchElementException("Post not found or author does not match");
-        }
-        post.update(title, content);
-
-        return postRepository.save(post);
+    public Post updatePost(Long postId, String title, String content) {
+        return null;
     }
 
-    @Transactional
-    public void deletePost(Long authorId, Long postId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new NoSuchElementException("Post not found with id: " + postId));
-        Member author = memberRepository.findById(authorId)
-                .orElseThrow(() -> new NoSuchElementException("Member not found"));
+    public void deletePost(Long postId) {
 
-        if (!post.getMember().getId().equals(author.getId())) {
-            //NOTE : 에러타입 변경할것
-            throw new NoSuchElementException("Post not found or author does not match");
-        }
-
-        postRepository.delete(post);
     }
 
-    public Post getPost(Long postId) {
-        return postRepository.findById(postId).orElseThrow(()-> new NoSuchElementException("Post not found"));
+    public Optional<Post> getPost(Long postId) {
+        return Optional.empty();
     }
 
-    public Page<Post> getAllPosts(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return postRepository.findAll(pageable);
+    public List<Post> getAllPosts(int page, int size) {
+        return List.of();
     }
 
-    public Page<Post> getPostsByAuthor(Long authorId, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Member author = memberRepository.findById(authorId)
-                .orElseThrow(() -> new NoSuchElementException("Member not found"));
-        return postRepository.findByMember(author, pageable);
+    public List<Post> getPostsByAuthor(Long authorId, int page, int size) {
+        return List.of();
     }
 
-    public Page<Post> searchPosts(String keyword, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return postRepository.findByTitleContainingOrContentContaining(keyword, keyword, pageable);
+    public List<Post> searchPosts(String keyword, int page, int size) {
+        return List.of();
     }
 
-    public Page<Post> searchPostsByAuthor(Long authorId, String keyword, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Member author = memberRepository.findById(authorId)
-                .orElseThrow(() -> new NoSuchElementException("Member not found"));
-        return postRepository.findByMemberAndKeyword(author, keyword, pageable);
+    public List<Post> searchPostsByAuthor(Long authorId, String keyword, int page, int size) {
+        return List.of();
     }
+
+    public long countPostsByAuthor(Long authorId) {
+        return 0;
+    }
+
+    public long countAllPosts() {
+        return 0;
+    }
+
+
 }

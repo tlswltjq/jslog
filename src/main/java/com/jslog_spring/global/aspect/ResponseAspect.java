@@ -35,8 +35,7 @@ public class ResponseAspect {
         Object proceed = joinPoint.proceed();
 
         RsData<?> rsData = (RsData<?>) proceed;
-
-        response.setStatus(Integer.parseInt(rsData.getResultCode()));
+        response.setStatus(rsData.statusCode());
 
         return proceed;
     }

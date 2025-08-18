@@ -1,10 +1,7 @@
 package com.jslog_spring.domain.post.entity;
 
-import com.jslog_spring.domain.member.entity.Member;
 import com.jslog_spring.global.jpa.entity.BaseEntity;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,21 +11,20 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Post extends BaseEntity {
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Member member;
+    private Long authorId;
     private String title;
     private String content;
 
-    @Builder(access = AccessLevel.PRIVATE)
-    private Post(Member member, String title, String content) {
-        this.member = member;
+    public Post(Long authorId, String title, String content) {
+        this.authorId = authorId;
         this.title = title;
         this.content = content;
     }
 
-    public static Post create(Member member, String title, String content) {
-        if (member == null) {
-            throw new IllegalArgumentException("Member cannot be null.");
+    @Builder(access = AccessLevel.PRIVATE)
+    public static Post create(Long authorId, String title, String content) {
+        if (authorId <= 0) {
+            throw new IllegalArgumentException("AuthorId must be positive.");
         }
         if (title == null || title.isBlank()) {
             throw new IllegalArgumentException("Title cannot be empty.");
@@ -38,18 +34,8 @@ public class Post extends BaseEntity {
         }
 
         return Post.builder()
-                .member(member)
                 .title(title)
                 .content(content)
                 .build();
-    }
-
-    public void update(String title, String content) {
-        if (title != null && !title.isBlank()) {
-            this.title = title;
-        }
-        if (content != null && !content.isBlank()) {
-            this.content = content;
-        }
     }
 }
