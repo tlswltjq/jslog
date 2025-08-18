@@ -1,4 +1,15 @@
 spring:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  datasource:
+    url: jdbc:h2:.;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=MySQL
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+    hikari:
+      auto-commit: false
   application:
     name: back
   profiles:
@@ -6,9 +17,7 @@ spring:
   output:
     ansi:
       enabled: always
-  datasource:
-    hikari:
-      auto-commit: false
+
   jackson:
     serialization:
       fail-on-empty-beans: false
@@ -31,3 +40,6 @@ logging:
 
 app:
   admin-api-key: NfMHpCLukCZL34GrC/K95fekVdpqJ4dQp/HiwmnXK1w=
+
+jwt:
+  secret-key : V3JkdEtza2ZKV1Jha1R5M3U2eUhuNDlNV2N6d2tCYjE5aU5zZlZLa3lGWT0=

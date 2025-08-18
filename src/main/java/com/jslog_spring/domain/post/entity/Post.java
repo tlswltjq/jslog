@@ -1,7 +1,10 @@
 package com.jslog_spring.domain.post.entity;
 
+import com.jslog_spring.domain.member.entity.Member;
 import com.jslog_spring.global.jpa.entity.BaseEntity;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,20 +14,21 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Post extends BaseEntity {
-    private Long authorId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Member member;
     private String title;
     private String content;
 
     @Builder(access = AccessLevel.PRIVATE)
-    private Post(Long authorId, String title, String content) {
-        this.authorId = authorId;
+    private Post(Member member, String title, String content) {
+        this.member = member;
         this.title = title;
         this.content = content;
     }
 
-    public static Post create(Long authorId, String title, String content) {
-        if (authorId <= 0) {
-            throw new IllegalArgumentException("AuthorId must be positive.");
+    public static Post create(Member member, String title, String content) {
+        if (member == null) {
+            throw new IllegalArgumentException("Member cannot be null.");
         }
         if (title == null || title.isBlank()) {
             throw new IllegalArgumentException("Title cannot be empty.");
@@ -34,7 +38,7 @@ public class Post extends BaseEntity {
         }
 
         return Post.builder()
-                .authorId(authorId)
+                .member(member)
                 .title(title)
                 .content(content)
                 .build();
