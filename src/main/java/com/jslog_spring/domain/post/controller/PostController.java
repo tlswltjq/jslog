@@ -6,11 +6,13 @@ import com.jslog_spring.domain.post.dto.PostResponseDto;
 import com.jslog_spring.domain.post.entity.Post;
 import com.jslog_spring.domain.post.service.PostService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-@RequestMapping("/posts")
+@Slf4j
+@RequestMapping("/api/posts")
 @RestController
 @RequiredArgsConstructor
 public class PostController {
@@ -20,6 +22,7 @@ public class PostController {
     @GetMapping
     public Page<AllPostResponseDto> getAllPosts(@RequestParam(value = "page", defaultValue = "0") int page,
                                                 @RequestParam(value = "size", defaultValue = "10") int size) {
+        log.info("Get all posts");
         return postService.getAllPosts(page, size).map(AllPostResponseDto::fromEntity);
     }
 
