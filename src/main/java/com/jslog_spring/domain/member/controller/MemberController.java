@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/members")
 @RequiredArgsConstructor
+    //TODO : ApiResponse로 교체
 public class MemberController {
     private final MemberService memberService;
 

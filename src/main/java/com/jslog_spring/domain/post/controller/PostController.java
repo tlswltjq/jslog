@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/posts")
 @RestController
 @RequiredArgsConstructor
+    //TODO : ApiResponse로 교체
 public class PostController {
     private final PostService postService;
 
