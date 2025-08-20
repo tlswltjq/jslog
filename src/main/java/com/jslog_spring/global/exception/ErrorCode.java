@@ -17,10 +17,10 @@ public enum ErrorCode {
     // Member
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "M001", "Member not found"),
     USERNAME_DUPLICATION(HttpStatus.CONFLICT, "M002", "Username is Duplication"),
-    INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "M003", "Invalid input value");
+    INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "M003", "Invalid input value"),
 
     // Post
-//    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "P001", "Post not found"),
+    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "P001", "Post not found");
 //    UNAUTHORIZED_POST_ACCESS(HttpStatus.FORBIDDEN, "P002", "Unauthorized post access");
 
 
