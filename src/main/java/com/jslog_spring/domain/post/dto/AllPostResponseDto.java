@@ -16,7 +16,7 @@ public record AllPostResponseDto(
         return new AllPostResponseDto(
                 post.getId(),
                 post.getTitle(),
-                post.getAuthorId(),
+                post.getMember().getId(),
                 post.getCreateDate().format(formatter),
                 post.getModifyDate().format(formatter)
         );
