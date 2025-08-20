@@ -13,6 +13,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.NoSuchElementException;
+
 @Slf4j
 @RequestMapping("/api/posts")
 @RestController
@@ -48,26 +50,36 @@ public class PostController {
     }
 
     @PostMapping
-    public PostResponseDto createPost(@AuthenticationPrincipal Member member, @RequestBody PostCreationRequest request) {
+    public ApiResponse<PostResponseDto> createPost(@AuthenticationPrincipal Member member, @RequestBody PostCreationRequest request) {
         Post post = postService.createPost(member, request.title(), request.content());
-        return PostResponseDto.fromEntity(post);
+        PostResponseDto response = PostResponseDto.fromEntity(post);
+        return ApiResponse.success("201", "포스트 생성 성공", response);
     }
 
     record PostUpdateRequest(Long postId, String title, String content) {
     }
 
     @PutMapping
-    public PostResponseDto updatePost(@AuthenticationPrincipal Member member, @RequestBody PostUpdateRequest request) {
-        Post post = postService.updatePost(member, request.postId(), request.title(), request.content());
-        return PostResponseDto.fromEntity(post);
+    public ApiResponse<PostResponseDto> updatePost(@AuthenticationPrincipal Member member, @RequestBody PostUpdateRequest request) {
+        try {
+            Post post = postService.updatePost(member, request.postId(), request.title(), request.content());
+            PostResponseDto response = PostResponseDto.fromEntity(post);
+            return ApiResponse.success("200", "포스트 수정 성공", response);
+        } catch (NoSuchElementException | PostNotFoundException e) {
+            return ApiResponse.failure("404", e.getMessage());
+        }
     }
 
     record PostDeletionRequest(Long postId) {
     }
 
     @DeleteMapping
-    public String deletePost(@AuthenticationPrincipal Member member, @RequestBody PostDeletionRequest request) {
+    public ApiResponse deletePost(@AuthenticationPrincipal Member member, @RequestBody PostDeletionRequest request) {
+        try {
         postService.deletePost(member, request.postId());
-        return "Deleted post";
+        return ApiResponse.success("204", "포스트 삭제 성공");
+        } catch (NoSuchElementException | PostNotFoundException e) {
+            return ApiResponse.failure("404", e.getMessage());
+        }
     }
 }
