@@ -1,14 +1,13 @@
 package com.jslog_spring.domain.member.controller;
 
 import com.jslog_spring.domain.member.dto.JoinResponse;
+import com.jslog_spring.domain.member.dto.TokenResponse;
 import com.jslog_spring.domain.member.entity.Member;
 import com.jslog_spring.domain.member.exception.UserNameDuplicationException;
 import com.jslog_spring.domain.member.service.MemberService;
 import com.jslog_spring.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,8 +24,7 @@ public class MemberController {
     record SignInRequest(String username, String password) {
     }
 
-    record SignInResponse(String accessToken) {
-    }
+//    record SignInResponse(String accessToken) { }
 
     @PostMapping("/signup")
     public ApiResponse<JoinResponse> signUp(@RequestBody JoinRequest request) {
@@ -41,10 +39,10 @@ public class MemberController {
     }
 
     @PostMapping("/signin")
-    public ApiResponse<SignInResponse> signIn(@RequestBody SignInRequest request) {
+    public ApiResponse<TokenResponse> signIn(@RequestBody SignInRequest request) {
         log.info("로그인 요청: username={}", request.username);
         String accessToken = memberService.signIn(request.username, request.password);
-        SignInResponse response = new SignInResponse(accessToken);
+        TokenResponse response = new TokenResponse(accessToken, null);
         return ApiResponse.success("200", "로그인 성공", response);
     }
 
