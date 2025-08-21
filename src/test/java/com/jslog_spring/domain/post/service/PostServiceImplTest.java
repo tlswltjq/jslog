@@ -3,6 +3,7 @@ package com.jslog_spring.domain.post.service;
 import com.jslog_spring.domain.member.entity.Member;
 import com.jslog_spring.domain.member.repository.MemberRepository;
 import com.jslog_spring.domain.post.entity.Post;
+import com.jslog_spring.domain.post.exception.PostNotFoundException;
 import com.jslog_spring.domain.post.repository.PostRepository;
 import fixture.MemberFixture;
 import fixture.PostFixture;
@@ -77,7 +78,7 @@ class PostServiceImplTest {
 
         when(postRepository.findById(postId)).thenReturn(java.util.Optional.empty());
 
-        assertThrows(NoSuchElementException.class, () -> {
+        assertThrows(PostNotFoundException.class, () -> {
             postService.updatePost(dummyMember, postId, "Updated Title", "Updated Content");
         });
     }
@@ -122,7 +123,7 @@ class PostServiceImplTest {
 
         when(postRepository.findById(postId)).thenReturn(java.util.Optional.empty());
 
-        assertThrows(NoSuchElementException.class, () -> {
+        assertThrows(PostNotFoundException.class, () -> {
             postService.deletePost(dummyMember, postId);
         });
     }
@@ -168,7 +169,7 @@ class PostServiceImplTest {
 
         when(postRepository.findById(postId)).thenReturn(java.util.Optional.empty());
 
-        assertThrows(NoSuchElementException.class, () -> {
+        assertThrows(PostNotFoundException.class, () -> {
             postService.getPost(postId);
         });
     }
