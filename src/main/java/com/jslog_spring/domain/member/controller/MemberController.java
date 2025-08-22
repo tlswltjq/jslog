@@ -8,8 +8,11 @@ import com.jslog_spring.domain.member.service.MemberService;
 import com.jslog_spring.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.util.Pair;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -41,8 +44,8 @@ public class MemberController {
     @PostMapping("/signin")
     public ApiResponse<TokenResponse> signIn(@RequestBody SignInRequest request) {
         log.info("로그인 요청: username={}", request.username);
-        String accessToken = memberService.signIn(request.username, request.password);
-        TokenResponse response = new TokenResponse(accessToken, null);
+        Pair<String, String> tokens = memberService.signIn(request.username, request.password);
+        TokenResponse response = new TokenResponse(tokens.getFirst(), tokens.getSecond());
         return ApiResponse.success("200", "로그인 성공", response);
     }
 
