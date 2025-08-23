@@ -7,7 +7,7 @@ import com.jslog_spring.domain.member.exception.UserNameDuplicationException;
 import com.jslog_spring.domain.member.repository.MemberRepository;
 import com.jslog_spring.global.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.util.Pair;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,7 +26,7 @@ public class MemberServiceImpl implements MemberService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
-    private final RedisTemplate redisTemplate;
+    private final StringRedisTemplate redisTemplate;
 
     public Member join(String username, String password, String name) {
         String encodedPassword = passwordEncoder.encode(password);
