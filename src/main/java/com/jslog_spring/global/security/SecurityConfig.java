@@ -70,7 +70,11 @@ public class SecurityConfig {
                 .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()))
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/members/signup", "/api/members/signin", "/h2-console/**").permitAll()
+                        .requestMatchers(
+//                                "/api/members/signup",
+                                "/api/members/signin",
+                                "/h2-console/**"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
