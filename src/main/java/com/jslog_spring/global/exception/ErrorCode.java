@@ -20,9 +20,12 @@ public enum ErrorCode {
     INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "M003", "Invalid input value"),
 
     // Post
-    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "P001", "Post not found");
+    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "P001", "Post not found"),
 //    UNAUTHORIZED_POST_ACCESS(HttpStatus.FORBIDDEN, "P002", "Unauthorized post access");
 
+    // JWT
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "A001", "Invalid token"),
+    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "A002", "Expired token");
 
     private final HttpStatus status;
     private final String code;
