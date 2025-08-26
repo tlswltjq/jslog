@@ -71,8 +71,8 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
-//                                "/api/members/signup",
-                                "/api/members/signin",
+                                "/api/auth/signup",
+                                "/api/auth/signin",
                                 "/h2-console/**"
                         ).permitAll()
                         .anyRequest().authenticated()
