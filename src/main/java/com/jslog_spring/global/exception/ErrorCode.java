@@ -25,7 +25,8 @@ public enum ErrorCode {
 
     // JWT
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "A001", "Invalid token"),
-    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "A002", "Expired token");
+    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "A002", "Expired token"),
+    TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "A00", "Token not found");
 
     private final HttpStatus status;
     private final String code;
