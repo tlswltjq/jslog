@@ -1,6 +1,7 @@
 package com.jslog_spring.domain.member.controller;
 
 import com.jslog_spring.domain.member.dto.JoinResponse;
+import com.jslog_spring.domain.member.dto.MemberInfoResponse;
 import com.jslog_spring.domain.member.dto.TokenResponse;
 import com.jslog_spring.domain.member.entity.Member;
 import com.jslog_spring.domain.member.exception.UserNameDuplicationException;
@@ -16,7 +17,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/members")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
@@ -51,7 +52,15 @@ public class MemberController {
 
     @GetMapping("/me")
     public ApiResponse getMe(@AuthenticationPrincipal Member member) {
-        return ApiResponse.success("200", member.getName()+ "의 마이페이지.");
+        MemberInfoResponse response = new MemberInfoResponse(member);
+        return ApiResponse.success("200", "내 정보 조회 성공", response);
     }
 
+    record ReissueRequest(String refreshToken) {}
+    @GetMapping("/reissue")
+    public ApiResponse reissue(@RequestBody ReissueRequest request) {
+        memberService.reissue(request.refreshToken);
+        return ApiResponse.success("200", "토큰 재발급 성공.");
+
+    }
 }

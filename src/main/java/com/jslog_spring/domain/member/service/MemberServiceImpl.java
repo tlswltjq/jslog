@@ -5,6 +5,7 @@ import com.jslog_spring.domain.member.exception.InvalidInputValueException;
 import com.jslog_spring.domain.member.exception.MemberNotFoundException;
 import com.jslog_spring.domain.member.exception.UserNameDuplicationException;
 import com.jslog_spring.domain.member.repository.MemberRepository;
+import com.jslog_spring.global.exception.TokenNotFoundException;
 import com.jslog_spring.global.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -37,6 +38,7 @@ public class MemberServiceImpl implements MemberService {
         return memberRepository.save(member);
     }
 
+    @Deprecated
     public Member getMember(String username) {
         Optional<Member> member = memberRepository.findByUsername(username);
         return member.orElseThrow(MemberNotFoundException::new);
@@ -66,5 +68,28 @@ public class MemberServiceImpl implements MemberService {
         );
 
         return Pair.of(accessToken, refreshToken);
+    }
+
+    public Pair<String, String> reissue(String refreshToken) {
+
+        jwtUtil.validateToken(refreshToken);
+
+        String username = jwtUtil.getClaims(refreshToken).get("username", String.class);
+        String storedRefreshToken = redisTemplate.opsForValue().get(username);
+        if (storedRefreshToken == null || !storedRefreshToken.equals(refreshToken)) {
+            throw new TokenNotFoundException(); // Redis에 저장된 토큰이 없거나 일치하지 않는 경우
+        }
+
+        String newAccessToken = jwtUtil.generateAccessToken(Map.of("username", username));
+        String newRefreshToken = jwtUtil.generateRefreshToken(Map.of("username", username));
+
+        redisTemplate.opsForValue().set(
+                username,
+                newRefreshToken,
+                365,
+                TimeUnit.DAYS
+        );
+
+        return Pair.of(newAccessToken, newRefreshToken);
     }
 }
