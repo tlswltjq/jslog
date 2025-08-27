@@ -42,7 +42,7 @@ public class JwtUtil {
         return Jwts.builder()
                 .claims(claims)
                 .issuedAt(new Date(now))
-                .expiration(new Date(now + 1000 * 60 * 60)) // 1시간
+                .expiration(new Date(now + 1000 * 60 * 5)) //5분
                 .signWith(getSecretKey())
                 .compact();
     }
@@ -54,7 +54,7 @@ public class JwtUtil {
         return Jwts.builder()
                 .claims(claims)
                 .issuedAt(new Date(now))
-                .expiration(new Date(now + 1000L * 60 * 60 * 24 * 365)) // 1년
+                .expiration(new Date(now + 1000L * 60 * 60 * 24)) // 하루
                 .signWith(getSecretKey())
                 .compact();
     }

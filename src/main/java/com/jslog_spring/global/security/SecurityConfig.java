@@ -73,6 +73,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/auth/signup",
                                 "/api/auth/signin",
+                                "/api/auth/reissue",
                                 "/h2-console/**"
                         ).permitAll()
                         .anyRequest().authenticated()

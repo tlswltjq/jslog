@@ -57,10 +57,12 @@ public class MemberController {
     }
 
     record ReissueRequest(String refreshToken) {}
-    @GetMapping("/reissue")
+    @PostMapping("/reissue")
     public ApiResponse reissue(@RequestBody ReissueRequest request) {
-        memberService.reissue(request.refreshToken);
-        return ApiResponse.success("200", "토큰 재발급 성공.");
+        Pair<String, String> reissued = memberService.reissue(request.refreshToken);
+        TokenResponse response = new TokenResponse(reissued.getFirst(), reissued.getSecond());
+        log.info("토큰 재발급 완료");
+        return ApiResponse.success("200", "토큰 재발급 성공.", response);
 
     }
 }
