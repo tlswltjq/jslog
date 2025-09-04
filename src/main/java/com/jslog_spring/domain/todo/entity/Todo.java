@@ -1,10 +1,8 @@
 package com.jslog_spring.domain.todo.entity;
 
+import com.jslog_spring.domain.member.entity.Member;
 import com.jslog_spring.global.jpa.entity.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,21 +15,27 @@ public class Todo extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @ManyToOne
+    private Member member;
     private String category;
     private String title;
     private String description;
     private boolean completed;
 
     @Builder(access = AccessLevel.PRIVATE)
-    public Todo(Long id, String category, String title, String description, boolean completed) {
+    public Todo(Long id, Member member, String category, String title, String description, boolean completed) {
         this.id = id;
+        this.member = member;
         this.category = category;
         this.title = title;
         this.description = description;
         this.completed = completed;
     }
 
-    public static Todo create(String category, String title, String description) {
+    public static Todo create(Member member, String category, String title, String description) {
+        if (member == null) {
+            throw new IllegalArgumentException("Member cannot be null.");
+        }
         if (category == null || category.isBlank()) {
             throw new IllegalArgumentException("Category cannot be empty.");
         }
@@ -43,6 +47,7 @@ public class Todo extends BaseEntity {
         }
 
         return Todo.builder()
+                .member(member)
                 .category(category)
                 .title(title)
                 .description(description)
