@@ -70,13 +70,22 @@ public class SecurityConfig {
                 .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()))
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/members/signup", "/api/members/signin", "/h2-console/**").permitAll()
+                        .requestMatchers(
+                                "/api/auth/signup",
+                                "/api/auth/signin",
+                                "/api/auth/reissue",
+                                "/h2-console/**"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                     .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
+                 )
+        ;
 
         return http.build();
     }

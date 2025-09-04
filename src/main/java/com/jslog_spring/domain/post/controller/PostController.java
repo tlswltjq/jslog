@@ -19,11 +19,10 @@ import java.util.NoSuchElementException;
 @RequestMapping("/api/posts")
 @RestController
 @RequiredArgsConstructor
-    //TODO : ApiResponse로 교체
 public class PostController {
     private final PostService postService;
 
-    //이후 프로젝션 적용 고려
+    //프로젝션 보다 본문을 객체로 분리하고 fetch = FetchType.LAZY가 나을듯.
     @GetMapping
     public Page<AllPostResponseDto> getAllPosts(@RequestParam(value = "page", defaultValue = "0") int page,
                                                 @RequestParam(value = "size", defaultValue = "10") int size) {

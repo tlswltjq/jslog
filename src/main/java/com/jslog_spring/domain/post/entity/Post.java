@@ -2,18 +2,21 @@ package com.jslog_spring.domain.post.entity;
 
 import com.jslog_spring.domain.member.entity.Member;
 import com.jslog_spring.global.jpa.entity.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Objects;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Post extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
     private String title;
@@ -51,5 +54,18 @@ public class Post extends BaseEntity {
         if (content != null && !content.isBlank()) {
             this.content = content;
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Post post = (Post) o;
+        return Objects.equals(id, post.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

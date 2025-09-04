@@ -1,20 +1,23 @@
 package com.jslog_spring.domain.member.controller;
 
 import com.jslog_spring.domain.member.dto.JoinResponse;
+import com.jslog_spring.domain.member.dto.MemberInfoResponse;
+import com.jslog_spring.domain.member.dto.TokenResponse;
 import com.jslog_spring.domain.member.entity.Member;
 import com.jslog_spring.domain.member.exception.UserNameDuplicationException;
 import com.jslog_spring.domain.member.service.MemberService;
 import com.jslog_spring.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.util.Pair;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
-@RequestMapping("/api/members")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
@@ -25,8 +28,7 @@ public class MemberController {
     record SignInRequest(String username, String password) {
     }
 
-    record SignInResponse(String accessToken) {
-    }
+//    record SignInResponse(String accessToken) { }
 
     @PostMapping("/signup")
     public ApiResponse<JoinResponse> signUp(@RequestBody JoinRequest request) {
@@ -41,16 +43,26 @@ public class MemberController {
     }
 
     @PostMapping("/signin")
-    public ApiResponse<SignInResponse> signIn(@RequestBody SignInRequest request) {
+    public ApiResponse<TokenResponse> signIn(@RequestBody SignInRequest request) {
         log.info("로그인 요청: username={}", request.username);
-        String accessToken = memberService.signIn(request.username, request.password);
-        SignInResponse response = new SignInResponse(accessToken);
+        Pair<String, String> tokens = memberService.signIn(request.username, request.password);
+        TokenResponse response = new TokenResponse(tokens.getFirst(), tokens.getSecond());
         return ApiResponse.success("200", "로그인 성공", response);
     }
 
     @GetMapping("/me")
     public ApiResponse getMe(@AuthenticationPrincipal Member member) {
-        return ApiResponse.success("200", member.getName()+ "의 마이페이지.");
+        MemberInfoResponse response = new MemberInfoResponse(member);
+        return ApiResponse.success("200", "내 정보 조회 성공", response);
     }
 
+    record ReissueRequest(String refreshToken) {}
+    @PostMapping("/reissue")
+    public ApiResponse reissue(@RequestBody ReissueRequest request) {
+        Pair<String, String> reissued = memberService.reissue(request.refreshToken);
+        TokenResponse response = new TokenResponse(reissued.getFirst(), reissued.getSecond());
+        log.info("토큰 재발급 완료");
+        return ApiResponse.success("200", "토큰 재발급 성공.", response);
+
+    }
 }

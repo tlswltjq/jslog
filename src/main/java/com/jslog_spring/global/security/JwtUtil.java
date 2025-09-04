@@ -1,7 +1,15 @@
 package com.jslog_spring.global.security;
 
+import com.jslog_spring.global.exception.ErrorCode;
+import com.jslog_spring.global.exception.ExpiredTokenException;
+import com.jslog_spring.global.exception.InvalidTokenException;
+import com.jslog_spring.global.exception.ServiceException;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
@@ -34,7 +42,7 @@ public class JwtUtil {
         return Jwts.builder()
                 .claims(claims)
                 .issuedAt(new Date(now))
-                .expiration(new Date(now + 1000 * 60 * 60)) // 1시간
+                .expiration(new Date(now + 1000 * 60 * 5)) //5분
                 .signWith(getSecretKey())
                 .compact();
     }
@@ -46,7 +54,7 @@ public class JwtUtil {
         return Jwts.builder()
                 .claims(claims)
                 .issuedAt(new Date(now))
-                .expiration(new Date(now + 1000L * 60 * 60 * 24 * 365)) // 1년
+                .expiration(new Date(now + 1000L * 60 * 60 * 24)) // 하루
                 .signWith(getSecretKey())
                 .compact();
     }
@@ -59,9 +67,10 @@ public class JwtUtil {
                     .build()
                     .parseSignedClaims(token);
             return true;
-        } catch (Exception e) {
-            // 토큰이 유효하지 않을 경우 여기서 처리 (예: 로깅)
-            return false;
+        } catch (ExpiredJwtException e) {
+            throw new ExpiredTokenException();
+        } catch (MalformedJwtException | SignatureException | UnsupportedJwtException | IllegalArgumentException e) {
+            throw new InvalidTokenException();
         }
     }
 
