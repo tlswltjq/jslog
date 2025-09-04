@@ -55,7 +55,7 @@ public class Todo extends BaseEntity {
                 .build();
     }
 
-    public void update(String category, String title, String description, Boolean completed) {
+    public void update(String category, String title, String description) {
         if (category != null && !category.isBlank()) {
             this.category = category;
         }
@@ -65,8 +65,9 @@ public class Todo extends BaseEntity {
         if (description != null && !description.isBlank()) {
             this.description = description;
         }
-        if (completed != null) {
-            this.completed = completed;
-        }
+    }
+
+    public void toggleCompleted() {
+        this.completed = !this.completed;
     }
 }
