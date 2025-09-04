@@ -42,8 +42,14 @@ public class Todo extends BaseEntity {
         if (title == null || title.isBlank()) {
             throw new IllegalArgumentException("Title cannot be empty.");
         }
-        if (description == null || description.isBlank()) {
-            throw new IllegalArgumentException("Description cannot be empty.");
+        if (description == null) {
+            return Todo.builder()
+                    .member(member)
+                    .category(category)
+                    .title(title)
+                    .description("")
+                    .completed(false)
+                    .build();
         }
 
         return Todo.builder()
