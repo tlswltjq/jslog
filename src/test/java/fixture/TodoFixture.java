@@ -9,6 +9,19 @@ public class TodoFixture {
         return Todo.create(member, category, title, description);
     }
 
+    public static Todo createTodo(String category, String title, String description) {
+        Member member = MemberFixture.createMember();
+        return createTodo(member, category, title, description);
+    }
+
+    public static Todo createTodo() {
+        Member member = MemberFixture.createMember();
+        String category = "DEFAULT_CATEGORY";
+        String title = "DEFAULT_TITLE";
+        String description = "DEFAULT_DESCRIPTION";
+        return createTodo(member, category, title, description);
+    }
+
     public static Todo createTodoWithId(Long id, Member member, String category, String title, String description) {
         Todo todo = Todo.create(member, category, title, description);
         ReflectionTestUtils.setField(todo, "id", id);
