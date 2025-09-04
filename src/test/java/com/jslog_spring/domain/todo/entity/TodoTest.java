@@ -74,14 +74,41 @@ class TodoTest {
     }
 
     @Test
-    @DisplayName("Todo완료여부 토글 테스트")
+    @DisplayName("Todo 완료 테스트")
+    void todoDoneTest() {
+        // Given
+        Todo todo = createTodo();
+
+        // When
+        todo.done();
+
+        // Then
+        Assertions.assertThat(todo.isCompleted()).isTrue();
+    }
+
+    @Test
+    @DisplayName("Todo 미완료 테스트")
+    void todoUndoneTest() {
+        // Given
+        Todo todo = createTodo();
+        todo.done(); // 먼저 완료 상태로 변경
+
+        // When
+        todo.undone();
+
+        // Then
+        Assertions.assertThat(todo.isCompleted()).isFalse();
+    }
+
+    @Test
+    @DisplayName("Todo토글 테스트")
     void todoToggleCompletedTest() {
         // Given
         Todo todo = createTodo();
         boolean initialStatus = todo.isCompleted();
 
         // When
-        todo.toggleCompleted();
+        todo.toggle();
 
         // Then
         Assertions.assertThat(todo.isCompleted()).isEqualTo(!initialStatus);

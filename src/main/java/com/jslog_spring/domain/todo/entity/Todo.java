@@ -73,7 +73,19 @@ public class Todo extends BaseEntity {
         }
     }
 
-    public void toggleCompleted() {
-        this.completed = !this.completed;
+    public void done() {
+        this.completed = true;
+    }
+
+    public void undone() {
+        this.completed = false;
+    }
+
+    public void toggle() {
+        if (this.completed) {
+            this.undone();
+        } else {
+            this.done();
+        }
     }
 }
