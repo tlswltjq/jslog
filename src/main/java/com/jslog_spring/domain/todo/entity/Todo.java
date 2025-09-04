@@ -23,14 +23,18 @@ public class Todo extends BaseEntity {
     private boolean completed;
 
     @Builder(access = AccessLevel.PRIVATE)
-    public Todo(Long id, String title, String description, boolean completed) {
+    public Todo(Long id, String category, String title, String description, boolean completed) {
         this.id = id;
+        this.category = category;
         this.title = title;
         this.description = description;
         this.completed = completed;
     }
 
-    public static Todo create(String title, String description) {
+    public static Todo create(String category, String title, String description) {
+        if (category == null || category.isBlank()) {
+            throw new IllegalArgumentException("Category cannot be empty.");
+        }
         if (title == null || title.isBlank()) {
             throw new IllegalArgumentException("Title cannot be empty.");
         }
@@ -39,13 +43,17 @@ public class Todo extends BaseEntity {
         }
 
         return Todo.builder()
+                .category(category)
                 .title(title)
                 .description(description)
                 .completed(false)
                 .build();
     }
 
-    public void update(String title, String description, Boolean completed) {
+    public void update(String category, String title, String description, Boolean completed) {
+        if (category != null && !category.isBlank()) {
+            this.category = category;
+        }
         if (title != null && !title.isBlank()) {
             this.title = title;
         }
