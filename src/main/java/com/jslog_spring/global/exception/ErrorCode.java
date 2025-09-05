@@ -25,6 +25,7 @@ public enum ErrorCode {
 
     // Todo
     TODO_NOT_FOUND(HttpStatus.NOT_FOUND, "T001", "Todo not found"),
+    TODO_ACCESS_DENIED(HttpStatus.FORBIDDEN, "T002", "Access to the requested Todo is denied"),
 
     // JWT
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "A001", "Invalid token"),
