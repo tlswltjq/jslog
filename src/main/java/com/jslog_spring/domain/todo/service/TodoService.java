@@ -2,8 +2,11 @@ package com.jslog_spring.domain.todo.service;
 
 import com.jslog_spring.domain.member.entity.Member;
 import com.jslog_spring.domain.todo.entity.Todo;
+import com.jslog_spring.domain.todo.exception.TodoNotFoundException;
+import com.jslog_spring.domain.todo.exception.TodoOwnershipException;
 import com.jslog_spring.domain.todo.repotisory.TodoRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,27 +21,32 @@ public class TodoService {
         return todoRepository.save(todo);
     }
 
-    public Todo getTodoById(Long id) {
-        return todoRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Todo not found with id: " + id));
+    public Todo getTodoById(Member member, Long id) {
+        Todo todo = todoRepository.findById(id)
+                .orElseThrow(() -> new TodoNotFoundException(id));
+        if (!todo.getMember().equals(member)) {
+            throw new TodoOwnershipException(id, member.getId());
+        } else {
+            return todo;
+        }
     }
 
-    public List<Todo> getAllTodos(Member member){
+    public List<Todo> getAllTodos(Member member) {
         return todoRepository.findByMember(member);
     }
 
-    public List<Todo> getAllTodos(Member member, String category){
+    public List<Todo> getAllTodos(Member member, String category) {
         return todoRepository.findByMemberAndCategory(member, category);
     }
 
-    public Todo updateTodo(Long id, String category, String title, String description) {
-        Todo todo = getTodoById(id);
+    public Todo updateTodo(Member member, Long id, String category, String title, String description) {
+        Todo todo = getTodoById(member, id);
         todo.update(category, title, description);
         return todoRepository.save(todo);
     }
 
-    public void doneTodo(Long id) {
-        Todo todo = getTodoById(id);
+    public void doneTodo(Member member, Long id) {
+        Todo todo = getTodoById(member, id);
         todo.done();
         todoRepository.save(todo);
     }
@@ -48,20 +56,20 @@ public class TodoService {
         todoRepository.save(todo);
     }
 
-    public void undoneTodo(Long id) {
-        Todo todo = getTodoById(id);
+    public void undoneTodo(Member member, Long id) {
+        Todo todo = getTodoById(member, id);
         todo.undone();
         todoRepository.save(todo);
     }
 
-    public void toggleTodo(Long id) {
-        Todo todo = getTodoById(id);
+    public void toggleTodo(Member member, Long id) {
+        Todo todo = getTodoById(member, id);
         todo.toggle();
         todoRepository.save(todo);
     }
 
-    public void deleteTodo(Long id) {
-        Todo todo = getTodoById(id);
+    public void deleteTodo(Member member, Long id) {
+        Todo todo = getTodoById(member, id);
         todoRepository.delete(todo);
     }
 
