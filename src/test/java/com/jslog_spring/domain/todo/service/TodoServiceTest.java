@@ -5,8 +5,6 @@ import com.jslog_spring.domain.todo.entity.Todo;
 import com.jslog_spring.domain.todo.exception.TodoNotFoundException;
 import com.jslog_spring.domain.todo.exception.TodoOwnershipException;
 import com.jslog_spring.domain.todo.repotisory.TodoRepository;
-import fixture.MemberFixture;
-import fixture.TodoFixture;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,10 +12,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
-import static fixture.MemberFixture.*;
-import static fixture.TodoFixture.*;
+import static fixture.MemberFixture.createMember;
+import static fixture.MemberFixture.createMemberWithId;
+import static fixture.TodoFixture.createTodoWithId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -101,5 +101,22 @@ public class TodoServiceTest {
             //then
             assertThat(e.getMessage()).isEqualTo("Access to the requested Todo is denied");
         }
+    }
+
+    @Test
+    @DisplayName("사용자의 모든 할 일을 조회할 수 있다.")
+    public void getAllTodosTest() {
+        //given
+        Member author = createMember();
+        Todo todo1 = createTodoWithId(1L, author, "Work", "todo title1", "todo description1");
+        Todo todo2 = createTodoWithId(2L, author, "Personal", "todo title2", "todo description2");
+
+        //when
+        when(todoRepository.findByMember(author)).thenReturn(List.of(todo1, todo2));
+        List<Todo> todos = todoService.getAllTodos(author);
+
+        //then
+        assertThat(todos).hasSize(2);
+        assertThat(todos).containsExactlyInAnyOrder(todo1, todo2);
     }
 }
