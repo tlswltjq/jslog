@@ -23,6 +23,9 @@ public enum ErrorCode {
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "P001", "Post not found"),
 //    UNAUTHORIZED_POST_ACCESS(HttpStatus.FORBIDDEN, "P002", "Unauthorized post access");
 
+    // Todo
+    TODO_NOT_FOUND(HttpStatus.NOT_FOUND, "T001", "Todo not found"),
+
     // JWT
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "A001", "Invalid token"),
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "A002", "Expired token"),
