@@ -79,5 +79,4 @@ public class TodoService {
         List<Todo> todos = todoRepository.findByMemberAndCategory(member, category);
         todos.forEach(this::doneTodo);
     }
-    //todo : 테스트 추가할 것
 }
