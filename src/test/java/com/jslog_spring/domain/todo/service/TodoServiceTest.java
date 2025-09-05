@@ -119,4 +119,22 @@ public class TodoServiceTest {
         assertThat(todos).hasSize(2);
         assertThat(todos).containsExactlyInAnyOrder(todo1, todo2);
     }
+
+    @Test
+    @DisplayName("사용자는 특정 카테고리에 속한 모든 할 일을 조회할 수 있다.")
+    public void getAllTodosByCategoryTest() {
+        //given
+        Member author = createMember();
+        String category = "Work";
+        Todo todo1 = createTodoWithId(1L, author, category, "todo title1", "todo description1");
+        Todo todo2 = createTodoWithId(2L, author, category, "todo title2", "todo description2");
+
+        //when
+        when(todoRepository.findByMemberAndCategory(author, category)).thenReturn(List.of(todo1, todo2));
+        List<Todo> todos = todoService.getAllTodos(author, category);
+
+        //then
+        assertThat(todos).hasSize(2);
+        assertThat(todos).containsExactlyInAnyOrder(todo1, todo2);
+    }
 }
