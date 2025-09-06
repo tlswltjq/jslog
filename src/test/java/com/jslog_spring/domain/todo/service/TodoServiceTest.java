@@ -404,4 +404,60 @@ public class TodoServiceTest {
                     assertThat(e.getErrorCode()).isEqualTo(TODO_ACCESS_DENIED);
                 });
     }
+
+    @Test
+    @DisplayName("사용자는 할 일을 삭제할 수 있다.")
+    public void deleteTodoTest() {
+        //given
+        Member author = createMember();
+        Todo todo = createTodoWithId(1L, author, "Work", "todo title", "todo description");
+
+        //when
+        when(todoRepository.findById(1L)).thenReturn(Optional.of(todo));
+
+        //then
+        todoService.deleteTodo(author, 1L);
+    }
+
+    @Test
+    @DisplayName("사용자는 존재하지 않는 할 일을 삭제할 때 예외가 발생한다.")
+    public void deleteTodo_NotFoundTest() {
+        //given
+        Member author = createMember();
+        Long notExistentId = 999L;
+
+        //when
+        when(todoRepository.findById(notExistentId)).thenReturn(Optional.empty());
+
+        //then
+        assertThatThrownBy(() -> {
+            todoService.deleteTodo(author, notExistentId);
+        }).isInstanceOf(TodoNotFoundException.class)
+                .isInstanceOfSatisfying(TodoNotFoundException.class, e -> {
+                    assertThat(e.getTodoId()).isEqualTo(notExistentId);
+                    assertThat(e.getErrorCode()).isEqualTo(TODO_NOT_FOUND);
+                });
+    }
+
+    @Test
+    @DisplayName("사용자는 소유하지않는 할 일을 삭제할 때 예외가 발생한다.")
+    public void deleteTodo_UnauthorizedTest() {
+        //given
+        Member other = createMemberWithId(1L);
+        Member author = createMemberWithId(2L);
+        Todo todo = createTodoWithId(1L, other, "Work", "todo title", "todo description");
+
+        //when
+        when(todoRepository.findById(1L)).thenReturn(Optional.of(todo));
+
+        //then
+        assertThatThrownBy(() -> {
+            todoService.deleteTodo(author, 1L);
+        }).isInstanceOf(TodoOwnershipException.class)
+                .isInstanceOfSatisfying(TodoOwnershipException.class, e -> {
+                    assertThat(e.getTodoId()).isEqualTo(1L);
+                    assertThat(e.getMemberId()).isEqualTo(author.getId());
+                    assertThat(e.getErrorCode()).isEqualTo(TODO_ACCESS_DENIED);
+                });
+    }
 }
