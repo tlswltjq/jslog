@@ -6,7 +6,6 @@ import com.jslog_spring.domain.todo.exception.TodoNotFoundException;
 import com.jslog_spring.domain.todo.exception.TodoOwnershipException;
 import com.jslog_spring.domain.todo.repotisory.TodoRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
