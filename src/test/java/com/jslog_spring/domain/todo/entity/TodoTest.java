@@ -15,7 +15,6 @@ class TodoTest {
     @DisplayName("Todo 생성 테스트")
     void todoCreationTest() {
         // Given
-        Long id = 1L;
         Member member = createMember();
         String category = "Work";
         String title = "Complete report";
