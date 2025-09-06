@@ -282,7 +282,6 @@ public class TodoServiceTest {
                 });
     }
 
-
     @Test
     @DisplayName("사용자는 할 일을 미완료 상태로 변경할 수 있다.")
     public void undoneTodoTest() {
@@ -333,6 +332,71 @@ public class TodoServiceTest {
         //then
         assertThatThrownBy(() -> {
             todoService.undoneTodo(author, 1L);
+        }).isInstanceOf(TodoOwnershipException.class)
+                .isInstanceOfSatisfying(TodoOwnershipException.class, e -> {
+                    assertThat(e.getTodoId()).isEqualTo(1L);
+                    assertThat(e.getMemberId()).isEqualTo(author.getId());
+                    assertThat(e.getErrorCode()).isEqualTo(TODO_ACCESS_DENIED);
+                });
+    }
+
+    @Test
+    @DisplayName("사용자는 할 일의 완료 상태를 토글할 수 있다.")
+    public void toggleTodoTest() {
+        //given
+        Member author = createMember();
+        Todo todo = createTodoWithId(1L, author, "Work", "todo title", "todo description");
+        assertThat(todo.isDone()).isFalse();
+
+        //when
+        when(todoRepository.findById(1L)).thenReturn(Optional.of(todo));
+        when(todoRepository.save(any(Todo.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        todoService.toggleTodo(author, 1L);
+
+        //then
+        assertThat(todo.isDone()).isTrue();
+
+        //when
+        todoService.toggleTodo(author, 1L);
+
+        //then
+        assertThat(todo.isDone()).isFalse();
+    }
+
+    @Test
+    @DisplayName("사용자는 존재하지 않는 할 일을 토글하려 할 경우 예외가 발생한다.")
+    public void toggleTodo_NotFoundTest() {
+        //given
+        Member author = createMember();
+        Long notExistentId = 999L;
+
+        //when
+        when(todoRepository.findById(notExistentId)).thenReturn(Optional.empty());
+
+        //then
+        assertThatThrownBy(() -> {
+            todoService.toggleTodo(author, notExistentId);
+        }).isInstanceOf(TodoNotFoundException.class)
+                .isInstanceOfSatisfying(TodoNotFoundException.class, e -> {
+                    assertThat(e.getTodoId()).isEqualTo(notExistentId);
+                    assertThat(e.getErrorCode()).isEqualTo(TODO_NOT_FOUND);
+                });
+    }
+
+    @Test
+    @DisplayName("소유자가 아닌 사용자가 할 일의 상태를 토글하려 할 경우 예외가 발생한다.")
+    public void toggleTodo_UnauthorizedTest() {
+        //given
+        Member other = createMemberWithId(1L);
+        Member author = createMemberWithId(2L);
+        Todo todo = createTodoWithId(1L, other, "Work", "todo title", "todo description");
+
+        //when
+        when(todoRepository.findById(1L)).thenReturn(Optional.of(todo));
+
+        //then
+        assertThatThrownBy(() -> {
+            todoService.toggleTodo(author, 1L);
         }).isInstanceOf(TodoOwnershipException.class)
                 .isInstanceOfSatisfying(TodoOwnershipException.class, e -> {
                     assertThat(e.getTodoId()).isEqualTo(1L);
