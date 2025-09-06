@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import static fixture.MemberFixture.createMember;
 import static fixture.TodoFixture.createTodo;
+import static fixture.TodoFixture.createUndoneTodo;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class TodoTest {
@@ -89,8 +90,7 @@ class TodoTest {
     @DisplayName("Todo 미완료 테스트")
     void todoUndoneTest() {
         // Given
-        Todo todo = createTodo();
-        todo.done(); // 먼저 완료 상태로 변경
+        Todo todo = createUndoneTodo();
 
         // When
         todo.undone();
