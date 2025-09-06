@@ -15,10 +15,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
+import static com.jslog_spring.global.exception.ErrorCode.TODO_ACCESS_DENIED;
+import static com.jslog_spring.global.exception.ErrorCode.TODO_NOT_FOUND;
 import static fixture.MemberFixture.createMember;
 import static fixture.MemberFixture.createMemberWithId;
 import static fixture.TodoFixture.createTodoWithId;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -136,5 +139,205 @@ public class TodoServiceTest {
         //then
         assertThat(todos).hasSize(2);
         assertThat(todos).containsExactlyInAnyOrder(todo1, todo2);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 카테고리 조회시 빈 리스트를 반환한다.")
+    public void getAllTodosByCategory_EmptyListTest() {
+        //given
+        Member author = createMember();
+        String category = "NonExistentCategory";
+
+        //when
+        when(todoRepository.findByMemberAndCategory(author, category)).thenReturn(List.of());
+        List<Todo> todos = todoService.getAllTodos(author, category);
+
+        //then
+        assertThat(todos).isEmpty();
+    }
+
+    @Test
+    @DisplayName("사용자는 할 일의 카테고리, 제목, 설명을 수정할 수 있다.")
+    public void updateTodoTest() {
+        //given
+        Member author = createMember();
+        Todo todo = createTodoWithId(1L, author, "Work", "todo title", "todo description");
+        String newCategory = "Personal";
+        String newTitle = "updated title";
+        String newDescription = "updated description";
+
+        //when
+        when(todoRepository.findById(1L)).thenReturn(Optional.of(todo));
+        when(todoRepository.save(any(Todo.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Todo categoryUpdatedTodo = todoService.updateTodo(author, 1L, newCategory, null, null);
+        Todo titleUpdatedTodo = todoService.updateTodo(author, 1L, null, newTitle, null);
+        Todo descriptionIpdatedTodo = todoService.updateTodo(author, 1L, null, null, newDescription);
+
+        //then
+        assertThat(categoryUpdatedTodo.getCategory()).isEqualTo(newCategory);
+        assertThat(titleUpdatedTodo.getTitle()).isEqualTo(newTitle);
+        assertThat(descriptionIpdatedTodo.getDescription()).isEqualTo(newDescription);
+    }
+
+    @Test
+    @DisplayName("사용자는 존재하지 않는 할 일 ID로 수정할 경우 예외가 발생한다.")
+    public void updateTodo_NotFoundTest() {
+        //given
+        Member author = createMember();
+        Long notExistentId = 999L;
+        //when
+        when(todoRepository.findById(notExistentId)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> {
+            todoService.updateTodo(author, notExistentId, "new cat", "new title", "new desc");
+        })
+                .isInstanceOf(TodoNotFoundException.class)
+                .isInstanceOfSatisfying(TodoNotFoundException.class, e -> {
+                            assertThat(e.getTodoId()).isEqualTo(notExistentId);
+                            assertThat(e.getErrorCode()).isEqualTo(TODO_NOT_FOUND);
+                        }
+                );
+    }
+
+    @Test
+    @DisplayName("소유자가 아닌 사용자가 할 일 수정할 경우 예외가 발생한다.")
+    public void updateTodo_UnauthorizedTest() {
+        //given
+        Member other = createMemberWithId(1L);
+        Member author = createMemberWithId(2L);
+        Todo todo = createTodoWithId(1L, other, "Work", "todo title", "todo description");
+
+        //when
+        when(todoRepository.findById(1L)).thenReturn(Optional.of(todo));
+
+        assertThatThrownBy(() -> {
+            todoService.updateTodo(author, 1L, "new cat", "new title", "new desc");
+        })
+                .isInstanceOf(TodoOwnershipException.class)
+                .isInstanceOfSatisfying(TodoOwnershipException.class, e -> {
+                            assertThat(e.getTodoId()).isEqualTo(1L);
+                            assertThat(e.getMemberId()).isEqualTo(author.getId());
+                            assertThat(e.getErrorCode()).isEqualTo(TODO_ACCESS_DENIED);
+                        }
+                );
+    }
+
+    @Test
+    @DisplayName("사용자는 할 일을 완료 상태로 변경할 수 있다.")
+    public void doneTodoTest() {
+        //given
+        Member author = createMember();
+        Todo todo = createTodoWithId(1L, author, "Work", "todo title", "todo description");
+
+        //when
+        when(todoRepository.findById(1L)).thenReturn(Optional.of(todo));
+        when(todoRepository.save(any(Todo.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        todoService.doneTodo(author, 1L);
+
+        //then
+        assertThat(todo.isDone()).isTrue();
+    }
+
+    @Test
+    @DisplayName("사용자는 존재하지 않는 할 일을 수정하려 할 경우 예외가 발생한다.")
+    public void doneTodo_NotFoundTest() {
+        //given
+        Member author = createMember();
+        Long notExistentId = 999L;
+
+        //when
+        when(todoRepository.findById(notExistentId)).thenReturn(Optional.empty());
+
+        //then
+        assertThatThrownBy(() -> {
+            todoService.doneTodo(author, notExistentId);
+        }).isInstanceOf(TodoNotFoundException.class)
+                .isInstanceOfSatisfying(TodoNotFoundException.class, e -> {
+                    assertThat(e.getTodoId()).isEqualTo(notExistentId);
+                    assertThat(e.getErrorCode()).isEqualTo(TODO_NOT_FOUND);
+                });
+    }
+
+    @Test
+    @DisplayName("소유자가 아닌 사용자가 할 일을 완료 상태로 변경하려 할 경우 예외가 발생한다.")
+    public void doneTodo_UnauthorizedTest() {
+        //given
+        Member other = createMemberWithId(1L);
+        Member author = createMemberWithId(2L);
+        Todo todo = createTodoWithId(1L, other, "Work", "todo title", "todo description");
+
+        //when
+        when(todoRepository.findById(1L)).thenReturn(Optional.of(todo));
+
+        //then
+        assertThatThrownBy(() -> {
+            todoService.doneTodo(author, 1L);
+        }).isInstanceOf(TodoOwnershipException.class)
+                .isInstanceOfSatisfying(TodoOwnershipException.class, e -> {
+                    assertThat(e.getTodoId()).isEqualTo(1L);
+                    assertThat(e.getMemberId()).isEqualTo(author.getId());
+                    assertThat(e.getErrorCode()).isEqualTo(TODO_ACCESS_DENIED);
+                });
+    }
+
+
+    @Test
+    @DisplayName("사용자는 할 일을 미완료 상태로 변경할 수 있다.")
+    public void undoneTodoTest() {
+        //given
+        Member author = createMember();
+        Todo todo = createTodoWithId(1L, author, "Work", "todo title", "todo description");
+        //when
+        when(todoRepository.findById(1L)).thenReturn(Optional.of(todo));
+        when(todoRepository.save(any(Todo.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        todoService.undoneTodo(author, 1L);
+
+        //then
+        assertThat(todo.isDone()).isFalse();
+    }
+
+    @Test
+    @DisplayName("사용자는 존재하지 않는 할 일을 미완료 상태로 변경하려 할 경우 예외가 발생한다.")
+    public void undoneTodo_NotFoundTest() {
+        //given
+        Member author = createMember();
+        Long notExistentId = 999L;
+
+        //when
+        when(todoRepository.findById(notExistentId)).thenReturn(Optional.empty());
+
+        //then
+        assertThatThrownBy(() -> {
+            todoService.undoneTodo(author, notExistentId);
+        }).isInstanceOf(TodoNotFoundException.class)
+                .isInstanceOfSatisfying(TodoNotFoundException.class, e -> {
+                    assertThat(e.getTodoId()).isEqualTo(notExistentId);
+                    assertThat(e.getErrorCode()).isEqualTo(TODO_NOT_FOUND);
+                });
+    }
+
+    @Test
+    @DisplayName("소유자가 아닌 사용자가 할 일의 상태를 변경하려 할 경우 예외가 발생한다.")
+    public void undoneTodo_UnauthorizedTest() {
+        //given
+        Member other = createMemberWithId(1L);
+        Member author = createMemberWithId(2L);
+        Todo todo = createTodoWithId(1L, other, "Work", "todo title", "todo description");
+
+        //when
+        when(todoRepository.findById(1L)).thenReturn(Optional.of(todo));
+
+        //then
+        assertThatThrownBy(() -> {
+            todoService.undoneTodo(author, 1L);
+        }).isInstanceOf(TodoOwnershipException.class)
+                .isInstanceOfSatisfying(TodoOwnershipException.class, e -> {
+                    assertThat(e.getTodoId()).isEqualTo(1L);
+                    assertThat(e.getMemberId()).isEqualTo(author.getId());
+                    assertThat(e.getErrorCode()).isEqualTo(TODO_ACCESS_DENIED);
+                });
     }
 }
