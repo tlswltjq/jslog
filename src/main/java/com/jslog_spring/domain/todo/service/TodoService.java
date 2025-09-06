@@ -61,6 +61,11 @@ public class TodoService {
         todoRepository.save(todo);
     }
 
+    private void undoneTodo(Todo todo) {
+        todo.undone();
+        todoRepository.save(todo);
+    }
+
     public void toggleTodo(Member member, Long id) {
         Todo todo = getTodoById(member, id);
         todo.toggle();
@@ -85,5 +90,10 @@ public class TodoService {
     public void doneAllTodosOfCategory(Member member, String category) {
         List<Todo> todos = todoRepository.findByMemberAndCategory(member, category);
         todos.forEach(this::doneTodo);
+    }
+
+    public void undoneAllTodosOfCategory(Member member, String category) {
+        List<Todo> todos = todoRepository.findByMemberAndCategory(member, category);
+        todos.forEach(this::undoneTodo);
     }
 }
