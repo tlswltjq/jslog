@@ -83,7 +83,7 @@ class TodoTest {
         todo.done();
 
         // Then
-        Assertions.assertThat(todo.isCompleted()).isTrue();
+        Assertions.assertThat(todo.isDone()).isTrue();
     }
 
     @Test
@@ -97,7 +97,7 @@ class TodoTest {
         todo.undone();
 
         // Then
-        Assertions.assertThat(todo.isCompleted()).isFalse();
+        Assertions.assertThat(todo.isDone()).isFalse();
     }
 
     @Test
@@ -105,12 +105,12 @@ class TodoTest {
     void todoToggleCompletedTest() {
         // Given
         Todo todo = createTodo();
-        boolean initialStatus = todo.isCompleted();
+        boolean initialStatus = todo.isDone();
 
         // When
         todo.toggle();
 
         // Then
-        Assertions.assertThat(todo.isCompleted()).isEqualTo(!initialStatus);
+        Assertions.assertThat(todo.isDone()).isEqualTo(!initialStatus);
     }
 }

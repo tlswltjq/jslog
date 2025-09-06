@@ -20,16 +20,16 @@ public class Todo extends BaseEntity {
     private String category;
     private String title;
     private String description;
-    private boolean completed;
+    private boolean done;
 
     @Builder(access = AccessLevel.PRIVATE)
-    public Todo(Long id, Member member, String category, String title, String description, boolean completed) {
+    public Todo(Long id, Member member, String category, String title, String description, boolean done) {
         this.id = id;
         this.member = member;
         this.category = category;
         this.title = title;
         this.description = description;
-        this.completed = completed;
+        this.done = done;
     }
 
     public static Todo create(Member member, String category, String title, String description) {
@@ -48,7 +48,7 @@ public class Todo extends BaseEntity {
                     .category(category)
                     .title(title)
                     .description("")
-                    .completed(false)
+                    .done(false)
                     .build();
         }
 
@@ -57,7 +57,7 @@ public class Todo extends BaseEntity {
                 .category(category)
                 .title(title)
                 .description(description)
-                .completed(false)
+                .done(false)
                 .build();
     }
 
@@ -74,15 +74,15 @@ public class Todo extends BaseEntity {
     }
 
     public void done() {
-        this.completed = true;
+        this.done = true;
     }
 
     public void undone() {
-        this.completed = false;
+        this.done = false;
     }
 
     public void toggle() {
-        if (this.completed) {
+        if (this.done) {
             this.undone();
         } else {
             this.done();
