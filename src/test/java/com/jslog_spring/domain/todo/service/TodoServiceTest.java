@@ -19,6 +19,7 @@ import static com.jslog_spring.global.exception.ErrorCode.TODO_ACCESS_DENIED;
 import static com.jslog_spring.global.exception.ErrorCode.TODO_NOT_FOUND;
 import static fixture.MemberFixture.createMember;
 import static fixture.MemberFixture.createMemberWithId;
+import static fixture.TodoFixture.createDoneTodoWithId;
 import static fixture.TodoFixture.createTodoWithId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -526,8 +527,6 @@ public class TodoServiceTest {
 
         when(todoRepository.findByMemberAndCategory(author, category))
                 .thenReturn(List.of(todo1, todo2));
-        when(todoRepository.findById(1L)).thenReturn(Optional.of(todo1));
-        when(todoRepository.findById(2L)).thenReturn(Optional.of(todo2));
         when(todoRepository.save(any(Todo.class))).thenAnswer(inv -> inv.getArgument(0));
 
         // when
@@ -538,4 +537,27 @@ public class TodoServiceTest {
         assertThat(todo2.isDone()).isTrue();
     }
 
+    @Test
+    @DisplayName("사용자는 특정 카테고리의 모든 할 일을 미완료 상태로 변경할 수 있다.")
+    void undoneAllTodosOfCategoryTest() {
+        // given
+        Member author = createMember();
+        String category = "Work";
+        Todo todo1 = createDoneTodoWithId(1L, author);
+        Todo todo2 = createDoneTodoWithId(2L, author);
+
+        assertThat(todo1.isDone()).isTrue();
+        assertThat(todo2.isDone()).isTrue();
+
+        when(todoRepository.findByMemberAndCategory(author, category))
+                .thenReturn(List.of(todo1, todo2));
+        when(todoRepository.save(any(Todo.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        // when
+        todoService.undoneAllTodosOfCategory(author, category);
+
+        // then
+        assertThat(todo1.isDone()).isFalse();
+        assertThat(todo2.isDone()).isFalse();
+    }
 }
