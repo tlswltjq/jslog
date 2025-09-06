@@ -27,4 +27,20 @@ public class TodoFixture {
         ReflectionTestUtils.setField(todo, "id", id);
         return todo;
     }
+
+    public static Todo createUndoneTodo() {
+        return createTodo();
+    }
+
+    public static Todo createDoneTodo() {
+        Todo todo = createTodo();
+        todo.done(); // todo를 '완료' 상태로 변경
+        return todo;
+    }
+
+    public static Todo createDoneTodoWithId(Long id, Member member) {
+        Todo todo = createTodoWithId(id, member, "DEFAULT_CATEGORY", "DEFAULT_TITLE", "DEFAULT_DESCRIPTION");
+        todo.done(); // todo를 '완료' 상태로 변경
+        return todo;
+    }
 }
