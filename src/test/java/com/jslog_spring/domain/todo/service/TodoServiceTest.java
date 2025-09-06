@@ -23,6 +23,7 @@ import static fixture.TodoFixture.createTodoWithId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -460,4 +461,81 @@ public class TodoServiceTest {
                     assertThat(e.getErrorCode()).isEqualTo(TODO_ACCESS_DENIED);
                 });
     }
+
+    @Test
+    @DisplayName("사용자는 특정 카테고리의 모든 할 일을 삭제할 수 있다.")
+    void deleteTodosOfCategoryTest() {
+        // given
+        Member author = createMember();
+        String category = "Work";
+        Todo todo1 = createTodoWithId(1L, author, category, "title1", "desc1");
+        Todo todo2 = createTodoWithId(2L, author, category, "title2", "desc2");
+        when(todoRepository.findByMemberAndCategory(author, category))
+                .thenReturn(List.of(todo1, todo2));
+
+        // when
+        todoService.deleteTodosOfCategory(author, category);
+
+        // then
+        verify(todoRepository).deleteAll(List.of(todo1, todo2));
+    }
+
+    @Test
+    @DisplayName("사용자가 존재하지 않는 카테고리의 할 일을 삭제할 때 빈 리스트로 처리된다.")
+    void deleteTodosOfCategory_EmptyListTest() {
+        // given
+        Member author = createMember();
+        String category = "NonExistentCategory";
+        when(todoRepository.findByMemberAndCategory(author, category)).thenReturn(List.of());
+
+        // when
+        todoService.deleteTodosOfCategory(author, category);
+
+        // then
+        verify(todoRepository).deleteAll(List.of());
+    }
+
+    @Test
+    @DisplayName("사용자는 자신의 모든 할 일을 삭제할 수 있다.")
+    void deleteAllTodosTest() {
+        // given
+        Member author = createMember();
+        Todo todo1 = createTodoWithId(1L, author, "Work", "title1", "desc1");
+        Todo todo2 = createTodoWithId(2L, author, "Personal", "title2", "desc2");
+        when(todoRepository.findByMember(author)).thenReturn(List.of(todo1, todo2));
+
+        // when
+        todoService.deleteAllTodos(author);
+
+        // then
+        verify(todoRepository).deleteAll(List.of(todo1, todo2));
+    }
+
+    @Test
+    @DisplayName("사용자는 특정 카테고리의 모든 할 일을 완료 상태로 변경할 수 있다.")
+    void doneAllTodosOfCategoryTest() {
+        // given
+        Member author = createMember();
+        String category = "Work";
+        Todo todo1 = createTodoWithId(1L, author, category, "title1", "desc1");
+        Todo todo2 = createTodoWithId(2L, author, category, "title2", "desc2");
+
+        // 아직 완료되지 않은 상태여야 함
+        assertThat(todo1.isDone()).isFalse();
+        assertThat(todo2.isDone()).isFalse();
+
+        when(todoRepository.findByMemberAndCategory(author, category))
+                .thenReturn(List.of(todo1, todo2));
+        when(todoRepository.findById(1L)).thenReturn(Optional.of(todo1));
+        when(todoRepository.findById(2L)).thenReturn(Optional.of(todo2));
+        when(todoRepository.save(any(Todo.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        // when
+        todoService.doneAllTodosOfCategory(author, category);
+
+        // then
+        assertThat(todo1.isDone()).isTrue();
+        assertThat(todo2.isDone()).isTrue();
+    }
+
 }
