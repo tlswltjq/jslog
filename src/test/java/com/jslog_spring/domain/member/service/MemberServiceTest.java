@@ -1,7 +1,9 @@
 package com.jslog_spring.domain.member.service;
 
 import com.jslog_spring.domain.member.entity.Member;
+import com.jslog_spring.domain.member.exception.UserNameDuplicationException;
 import com.jslog_spring.domain.member.repository.MemberRepository;
+import com.jslog_spring.domain.todo.exception.TodoOwnershipException;
 import com.jslog_spring.global.security.JwtUtil;
 import fixture.MemberFixture;
 import org.junit.jupiter.api.DisplayName;
@@ -14,7 +16,10 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import static com.jslog_spring.global.exception.ErrorCode.TODO_ACCESS_DENIED;
+import static com.jslog_spring.global.exception.ErrorCode.USERNAME_DUPLICATION;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -54,5 +59,26 @@ public class MemberServiceTest {
         assertThat(joinedMember.getUsername()).isEqualTo(exceptedMember.getUsername());
         assertThat(joinedMember.getName()).isEqualTo(exceptedMember.getName());
         assertThat(joinedMember.getPassword()).isEqualTo(exceptedMember.getPassword());
+    }
+
+    @Test
+    @DisplayName("회원가입시 username(아이디)이 중복되면 예외가 발생한다.")
+    void joinTest_UsernameDuplicationException() {
+        //given
+        String username = "already_exist@username.com";
+        String password = "password";
+        String name = "testUser";
+
+        when(passwordEncoder.encode(any(String.class))).thenReturn("encodedPassword");
+        when(memberRepository.existsByUsername(any(String.class))).thenReturn(true);
+
+        assertThatThrownBy(() -> {
+            memberService.join(username, password, name);
+        }).isInstanceOf(UserNameDuplicationException.class)
+                .isInstanceOfSatisfying(UserNameDuplicationException.class, e -> {
+                            assertThat(e.getErrorCode()).isEqualTo(USERNAME_DUPLICATION);
+                        }
+                );
+
     }
 }
