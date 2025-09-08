@@ -1,0 +1,17 @@
+name: Auto Close Issue
+on:
+  pull_request:
+    types:
+      - closed
+jobs:
+  close-issue:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: read
+    steps:
+      - name: Close issue
+        uses: peter-evans/close-issue@v3
+        with:
+          close-message: Closed by pull request
