@@ -1,6 +1,5 @@
-package com.jslog_spring.domain.member;
+package com.jslog_spring.domain.member.entity;
 
-import com.jslog_spring.domain.member.entity.Member;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
