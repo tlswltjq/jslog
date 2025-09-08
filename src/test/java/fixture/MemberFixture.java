@@ -7,7 +7,10 @@ public class MemberFixture {
 
     public static Member createMember() {
         return Member.create("testUser", "test@example.com", "password");
+    }
 
+    public static Member createMember(String username, String password, String name) {
+        return Member.create(username, password, name);
     }
 
     public static Member createMemberWithId(Long id) {
