@@ -1,6 +1,7 @@
 package com.jslog_spring.domain.member.service;
 
 import com.jslog_spring.domain.member.entity.Member;
+import com.jslog_spring.domain.member.exception.MemberNotFoundException;
 import com.jslog_spring.domain.member.exception.UserNameDuplicationException;
 import com.jslog_spring.domain.member.repository.MemberRepository;
 import com.jslog_spring.domain.todo.exception.TodoOwnershipException;
@@ -16,8 +17,9 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import static com.jslog_spring.global.exception.ErrorCode.TODO_ACCESS_DENIED;
-import static com.jslog_spring.global.exception.ErrorCode.USERNAME_DUPLICATION;
+import java.util.Optional;
+
+import static com.jslog_spring.global.exception.ErrorCode.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -81,4 +83,36 @@ public class MemberServiceTest {
                 );
 
     }
+
+    @Test
+    @DisplayName("username(아이디)를 이용해 사용자를 조회할 수 있다.")
+    void getMemberTest(){
+        String username = "testUsername";
+        Member member = MemberFixture.createMember(username, "", "");
+
+        when(memberRepository.findByUsername(any(String.class))).thenReturn(Optional.of(member));
+
+        Member foundMember = memberService.getMember(username);
+
+        assertThat(foundMember).isNotNull();
+        assertThat(foundMember.getUsername()).isEqualTo(username);
+    }
+
+    @Test
+    @DisplayName("조회결과가 없으면 예외가 발생한다.")
+    void getMemberTest_MemberNotFoundException(){
+        String username = "nonExistUsername";
+
+        when(memberRepository.findByUsername(any(String.class))).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> {
+            memberService.getMember(username);
+        }).isInstanceOf(MemberNotFoundException.class)
+                .isInstanceOfSatisfying(MemberNotFoundException.class, e -> {
+                            assertThat(e.getErrorCode()).isEqualTo(MEMBER_NOT_FOUND);
+                        }
+                );
+    }
+
+
 }
