@@ -38,7 +38,6 @@ public class MemberServiceImpl implements MemberService {
         return memberRepository.save(member);
     }
 
-    @Deprecated
     public Member getMember(String username) {
         Optional<Member> member = memberRepository.findByUsername(username);
         return member.orElseThrow(MemberNotFoundException::new);
