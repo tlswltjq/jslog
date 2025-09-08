@@ -7,6 +7,7 @@ import com.jslog_spring.domain.member.exception.UserNameDuplicationException;
 import com.jslog_spring.domain.member.repository.MemberRepository;
 import com.jslog_spring.global.security.JwtUtil;
 import fixture.MemberFixture;
+import io.jsonwebtoken.Claims;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,6 +23,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -205,5 +207,43 @@ public class MemberServiceTest {
             memberService.signIn(username, password);
         })
                 .isInstanceOf(BadCredentialsException.class);
+    }
+
+    @Test
+    @DisplayName("refreshToken이 유효하고 Redis에 저장된 토큰과 일치하면 새로운 accessToken과 refreshToken을 발급한다")
+    void reissueTest() {
+        // given
+        String username = "testUser";
+        String oldRefreshToken = "oldRefreshToken";
+
+        String expectedAccessToken = "newAccessToken";
+        String expectedRefreshToken = "newRefreshToken";
+
+        Claims claims = mock(Claims.class);
+
+        ValueOperations<String, String> valueOps = mock(ValueOperations.class);
+
+        when(jwtUtil.validateToken(any(String.class))).thenReturn(true);
+        when(jwtUtil.getClaims(any(String.class))).thenReturn(claims);
+
+        when(claims.get("username", String.class)).thenReturn(username);
+
+        when(redisTemplate.opsForValue()).thenReturn(valueOps);
+        when(valueOps.get(any(String.class))).thenReturn(oldRefreshToken);
+
+        when(jwtUtil.generateAccessToken(anyMap())).thenReturn(expectedAccessToken);
+        when(jwtUtil.generateRefreshToken(anyMap())).thenReturn(expectedRefreshToken);
+
+        Pair<String, String> reissued = memberService.reissue(oldRefreshToken);
+
+        verify(jwtUtil).validateToken(oldRefreshToken);
+        verify(jwtUtil).getClaims(oldRefreshToken);
+        verify(valueOps).get(username);
+        verify(jwtUtil).generateAccessToken(Map.of("username", username));
+        verify(jwtUtil).generateRefreshToken(Map.of("username", username));
+        verify(valueOps).set(eq(username), eq(expectedRefreshToken), eq(365L), eq(TimeUnit.DAYS));
+
+        assertThat(reissued.getFirst()).isEqualTo(expectedAccessToken);
+        assertThat(reissued.getSecond()).isEqualTo(expectedRefreshToken);
     }
 }
