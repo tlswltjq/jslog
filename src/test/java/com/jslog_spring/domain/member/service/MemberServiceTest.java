@@ -5,9 +5,11 @@ import com.jslog_spring.domain.member.exception.InvalidInputValueException;
 import com.jslog_spring.domain.member.exception.MemberNotFoundException;
 import com.jslog_spring.domain.member.exception.UserNameDuplicationException;
 import com.jslog_spring.domain.member.repository.MemberRepository;
+import com.jslog_spring.global.exception.TokenNotFoundException;
 import com.jslog_spring.global.security.JwtUtil;
 import fixture.MemberFixture;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -246,4 +248,58 @@ public class MemberServiceTest {
         assertThat(reissued.getFirst()).isEqualTo(expectedAccessToken);
         assertThat(reissued.getSecond()).isEqualTo(expectedRefreshToken);
     }
+
+    @Test
+    @DisplayName("토큰이 유효하지 않으면 reissue에 실패하고 JwtException 를 반환된다.")
+    void reissue_InvalidTokenTest() {
+        String oldRefreshToken = "invalidToken";
+
+        when(jwtUtil.validateToken(oldRefreshToken)).thenThrow(JwtException.class);
+
+        assertThatThrownBy(() -> memberService.reissue(oldRefreshToken))
+                .isInstanceOf(JwtException.class);
+
+        verify(jwtUtil).validateToken(oldRefreshToken);
+    }
+
+    @Test
+    @DisplayName("Redis에 토큰이 없으면 reissue에 실패하고 TokenNotFoundException 를 반환한다.")
+    void reissue_TokenNotFoundTest() {
+        String username = "testUser";
+        String oldRefreshToken = "oldRefreshToken";
+
+        Claims claims = mock(Claims.class);
+        when(jwtUtil.validateToken(oldRefreshToken)).thenReturn(true);
+        when(jwtUtil.getClaims(oldRefreshToken)).thenReturn(claims);
+        when(claims.get("username", String.class)).thenReturn(username);
+
+        ValueOperations<String, String> valueOps = mock(ValueOperations.class);
+        when(redisTemplate.opsForValue()).thenReturn(valueOps);
+
+        when(valueOps.get(username)).thenReturn(null);
+
+        assertThatThrownBy(() -> memberService.reissue(oldRefreshToken))
+                .isInstanceOf(TokenNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("reissue 실패: Redis 토큰과 일치하지 않으면 TokenNotFoundException 발생")
+    void reissue_TokenMismatchTest() {
+        String username = "testUser";
+        String oldRefreshToken = "oldRefreshToken";
+
+        Claims claims = mock(Claims.class);
+        when(jwtUtil.validateToken(oldRefreshToken)).thenReturn(true);
+        when(jwtUtil.getClaims(oldRefreshToken)).thenReturn(claims);
+        when(claims.get("username", String.class)).thenReturn(username);
+
+        ValueOperations<String, String> valueOps = mock(ValueOperations.class);
+        when(redisTemplate.opsForValue()).thenReturn(valueOps);
+
+        when(valueOps.get(username)).thenReturn("someOtherToken");
+
+        assertThatThrownBy(() -> memberService.reissue(oldRefreshToken))
+                .isInstanceOf(TokenNotFoundException.class);
+    }
+
 }
