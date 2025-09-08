@@ -1,7 +1,6 @@
-package com.jslog_spring.domain.post;
+package com.jslog_spring.domain.post.entity;
 
 import com.jslog_spring.domain.member.entity.Member;
-import com.jslog_spring.domain.post.entity.Post;
 import fixture.MemberFixture;
 import fixture.PostFixture;
 import org.junit.jupiter.api.DisplayName;
