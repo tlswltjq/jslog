@@ -5,7 +5,6 @@ import com.jslog_spring.domain.member.exception.InvalidInputValueException;
 import com.jslog_spring.domain.member.exception.MemberNotFoundException;
 import com.jslog_spring.domain.member.exception.UserNameDuplicationException;
 import com.jslog_spring.domain.member.repository.MemberRepository;
-import com.jslog_spring.domain.todo.exception.TodoOwnershipException;
 import com.jslog_spring.global.security.JwtUtil;
 import fixture.MemberFixture;
 import org.junit.jupiter.api.DisplayName;
@@ -15,16 +14,24 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.util.Pair;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
-import static com.jslog_spring.global.exception.ErrorCode.*;
+import static com.jslog_spring.global.exception.ErrorCode.MEMBER_NOT_FOUND;
+import static com.jslog_spring.global.exception.ErrorCode.USERNAME_DUPLICATION;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class MemberServiceTest {
@@ -149,5 +156,54 @@ public class MemberServiceTest {
                             assertThat(e.getMessage()).isEqualTo("Invalid input value");
                         }
                 );
+    }
+
+    @Test
+    @DisplayName("signIn 성공 시, accessToken과 refreshToken을 반환하고 Redis에 refreshToken을 저장한다")
+    void signInSuccess() {
+        // given
+        String username = "test@example.com";
+        String password = "password";
+        String accessToken = "access-token";
+        String refreshToken = "refresh-token";
+
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn(username);
+
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(authentication);
+        when(jwtUtil.generateAccessToken(anyMap())).thenReturn(accessToken);
+        when(jwtUtil.generateRefreshToken(anyMap())).thenReturn(refreshToken);
+
+        ValueOperations<String, String> valueOps = mock(ValueOperations.class);
+        when(redisTemplate.opsForValue()).thenReturn(valueOps);
+
+        // when
+        Pair<String, String> result = memberService.signIn(username, password);
+
+        // then
+        assertThat(result.getFirst()).isEqualTo(accessToken);
+        assertThat(result.getSecond()).isEqualTo(refreshToken);
+
+        verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
+        verify(jwtUtil).generateAccessToken(anyMap());
+        verify(jwtUtil).generateRefreshToken(anyMap());
+        verify(valueOps).set(eq(username), eq(refreshToken), eq(365L), eq(TimeUnit.DAYS));
+    }
+
+    @Test
+    @DisplayName("signIn 실패 시, 예외를 반환한다")
+    void signInFailure() {
+        // given
+        String username = "testUsername";
+        String password = "wrongPassword";
+
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenThrow(BadCredentialsException.class);
+
+        assertThatThrownBy(() -> {
+            memberService.signIn(username, password);
+        })
+                .isInstanceOf(BadCredentialsException.class);
     }
 }
