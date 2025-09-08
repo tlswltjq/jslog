@@ -1,6 +1,7 @@
 package com.jslog_spring.domain.member.service;
 
 import com.jslog_spring.domain.member.entity.Member;
+import com.jslog_spring.domain.member.exception.InvalidInputValueException;
 import com.jslog_spring.domain.member.exception.MemberNotFoundException;
 import com.jslog_spring.domain.member.exception.UserNameDuplicationException;
 import com.jslog_spring.domain.member.repository.MemberRepository;
@@ -86,7 +87,7 @@ public class MemberServiceTest {
 
     @Test
     @DisplayName("username(아이디)를 이용해 사용자를 조회할 수 있다.")
-    void getMemberTest(){
+    void getMemberTest() {
         String username = "testUsername";
         Member member = MemberFixture.createMember(username, "", "");
 
@@ -100,7 +101,7 @@ public class MemberServiceTest {
 
     @Test
     @DisplayName("조회결과가 없으면 예외가 발생한다.")
-    void getMemberTest_MemberNotFoundException(){
+    void getMemberTest_MemberNotFoundException() {
         String username = "nonExistUsername";
 
         when(memberRepository.findByUsername(any(String.class))).thenReturn(Optional.empty());
@@ -114,5 +115,39 @@ public class MemberServiceTest {
                 );
     }
 
+    @Test
+    @DisplayName("사용자의 이름을 업데이트할 수 있다.")
+    void updateUserNameTest() {
+        Member member = MemberFixture.createMember();
+        String newName = "newName";
 
+        when(memberRepository.save(any(Member.class))).thenReturn(member);
+        Member updated = memberService.updateUserName(member, newName);
+
+        assertThat(updated.getUsername()).isEqualTo(member.getUsername());
+        assertThat(updated.getPassword()).isEqualTo(member.getPassword());
+        assertThat(updated.getName()).isEqualTo(newName);
+    }
+
+    @Test
+    @DisplayName("업데이트 하려는 이름이 null이거나 공백이면 예외가 발생한다.")
+    void updateUserNameTest_InvalidInputValueException() {
+        Member member = MemberFixture.createMember();
+
+        assertThatThrownBy(() -> {
+            memberService.updateUserName(member, null);
+        }).isInstanceOf(InvalidInputValueException.class)
+                .isInstanceOfSatisfying(InvalidInputValueException.class, e -> {
+                            assertThat(e.getMessage()).isEqualTo("Invalid input value");
+                        }
+                );
+
+        assertThatThrownBy(() -> {
+            memberService.updateUserName(member, "   ");
+        }).isInstanceOf(InvalidInputValueException.class)
+                .isInstanceOfSatisfying(InvalidInputValueException.class, e -> {
+                            assertThat(e.getMessage()).isEqualTo("Invalid input value");
+                        }
+                );
+    }
 }
