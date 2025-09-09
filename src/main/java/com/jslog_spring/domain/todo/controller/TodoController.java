@@ -66,4 +66,22 @@ public class TodoController {
         todoService.deleteAllTodos(member);
         return ApiResponse.success("200", "All todos deleted successfully");
     }
+
+    @PutMapping("/{id}")
+    public ApiResponse markTodoAsDone(@AuthenticationPrincipal Member member, @PathVariable Long id) {
+        todoService.toggleTodo(member, id);
+        return ApiResponse.success("200", "Todo marked as done successfully");
+    }
+
+    @PutMapping("/{category}/done")
+    public ApiResponse markTodosByCategoryAsDone(@AuthenticationPrincipal Member member, @PathVariable String category) {
+        List<Todo> todos = todoService.doneAllTodosByCategory(member, category);
+        return ApiResponse.success("200", "Todos in category marked as done successfully", todos);
+    }
+
+    @PutMapping("/{category}/undone")
+    public ApiResponse markTodosByCategoryAsUndone(@AuthenticationPrincipal Member member, @PathVariable String category) {
+        List<Todo> todos = todoService.undoneAllTodosByCategory(member, category);
+        return ApiResponse.success("200", "Todos in category marked as undone successfully", todos);
+    }
 }
