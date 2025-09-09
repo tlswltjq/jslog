@@ -1,5 +1,7 @@
 package com.jslog_spring.domain.member.entity;
 
+import com.jslog_spring.domain.member.exception.InvalidInputValueException;
+import fixture.MemberFixture;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -96,4 +98,66 @@ class MemberTest {
         member.updateName(newName);
         Assertions.assertThat(member.getName()).isEqualTo(newName);
     }
+
+    @Test
+    @DisplayName("Member객체 이름 업데이트 시 name이 null이거나 빈 문자열일 경우 예외가 발생한다.")
+    void memberUpdateInvalidNameTest() {
+        Member member = MemberFixture.createMember();
+
+        Assertions.assertThatThrownBy(() -> member.updateName(null))
+                .isInstanceOf(InvalidInputValueException.class);
+
+        Assertions.assertThatThrownBy(() -> member.updateName(""))
+                .isInstanceOf(InvalidInputValueException.class);
+    }
+
+    @Test
+    @DisplayName("Member 객체가 Post 객체를 생성하고, Member의 posts 리스트에 추가한다.")
+    void createPostTest() {
+        Member member = MemberFixture.createMember();
+        String title = "Test Title";
+        String content = "Test Content";
+
+        Assertions.assertThat(member.getPosts()).isEmpty();
+
+        var post = member.createPost(title, content);
+
+        Assertions.assertThat(post).isNotNull();
+        Assertions.assertThat(post.getTitle()).isEqualTo(title);
+        Assertions.assertThat(post.getContent()).isEqualTo(content);
+        Assertions.assertThat(post.getMember()).isEqualTo(member);
+        Assertions.assertThat(member.getPosts()).containsExactly(post);
+    }
+
+    @Test
+    @DisplayName("Member 객체가 Post 객체를 생성할 때 title이 null이거나 빈 문자열일 경우 예외가 발생한다.")
+    void createPostInvalidTitleTest() {
+        Member member = MemberFixture.createMember();
+        String title = "Test Title";
+        String content = "Test Content";
+
+        Assertions.assertThatThrownBy(() -> member.createPost(null, content))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Title cannot be empty.");
+
+        Assertions.assertThatThrownBy(() -> member.createPost("", content))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Title cannot be empty.");
+    }
+    @Test
+    @DisplayName("Member 객체가 Post 객체를 생성할 때 content가 null이거나 빈 문자열일 경우 예외가 발생한다.")
+    void createPostInvalidContentTest() {
+        Member member = MemberFixture.createMember();
+        String title = "Test Title";
+        String content = "Test Content";
+
+        Assertions.assertThatThrownBy(() -> member.createPost(title, null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Content cannot be empty.");
+
+        Assertions.assertThatThrownBy(() -> member.createPost(title, ""))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Content cannot be empty.");
+    }
+
 }
