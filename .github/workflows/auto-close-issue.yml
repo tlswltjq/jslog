@@ -4,6 +4,10 @@ on:
     types:
       - closed
 
+permissions:
+  issues: write       # 이슈 닫기/댓글 작성 가능
+  pull-requests: read # PR 읽기 가능
+
 jobs:
   close-issue:
     if: github.event.pull_request.merged == true
