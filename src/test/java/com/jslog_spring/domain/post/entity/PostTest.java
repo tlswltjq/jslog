@@ -10,15 +10,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class PostTest {
     @Test
-    @DisplayName("authorId, title, content를 입력받아 Post 객체를 생성한다.")
-    void postCreate() {
+    @DisplayName("사용자와 title, content를 입력받아 Post 객체를 생성한다.")
+    void postCreationTest() {
         Member member = MemberFixture.createMemberWithId(1L);
-        Post post = PostFixture.createPost(member);
+
+        String title = "Test Title";
+        String content = "Test Content";
+
+        Post post = PostFixture.createPost(member, title, content);
 
         assertThat(post).isNotNull();
         assertThat(post.getMember()).isEqualTo(member);
-        assertThat(post.getTitle()).isEqualTo("Test Title");
-        assertThat(post.getContent()).isEqualTo("Test Content");
+        assertThat(post.getTitle()).isEqualTo(title);
+        assertThat(post.getContent()).isEqualTo(content);
     }
 
     @Test
