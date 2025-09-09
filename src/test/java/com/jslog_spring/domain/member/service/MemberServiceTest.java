@@ -100,7 +100,7 @@ public class MemberServiceTest {
     @DisplayName("username(아이디)를 이용해 사용자를 조회할 수 있다.")
     void getMemberTest() {
         String username = "testUsername";
-        Member member = MemberFixture.createMember(username, "", "");
+        Member member = MemberFixture.createMember(username);
 
         when(memberRepository.findByUsername(any(String.class))).thenReturn(Optional.of(member));
 
