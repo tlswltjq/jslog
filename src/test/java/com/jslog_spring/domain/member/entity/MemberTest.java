@@ -1,6 +1,8 @@
 package com.jslog_spring.domain.member.entity;
 
 import com.jslog_spring.domain.member.exception.InvalidInputValueException;
+import com.jslog_spring.domain.post.entity.Post;
+import com.jslog_spring.domain.post.exception.PostNotFoundException;
 import fixture.MemberFixture;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -120,7 +122,7 @@ class MemberTest {
 
         Assertions.assertThat(member.getPosts()).isEmpty();
 
-        var post = member.createPost(title, content);
+        Post post = member.createPost(title, content);
 
         Assertions.assertThat(post).isNotNull();
         Assertions.assertThat(post.getTitle()).isEqualTo(title);
@@ -144,6 +146,7 @@ class MemberTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Title cannot be empty.");
     }
+
     @Test
     @DisplayName("Member 객체가 Post 객체를 생성할 때 content가 null이거나 빈 문자열일 경우 예외가 발생한다.")
     void createPostInvalidContentTest() {
@@ -160,4 +163,36 @@ class MemberTest {
                 .hasMessage("Content cannot be empty.");
     }
 
+    @Test
+    @DisplayName("Post 객체를 입력받아 Member의 posts 리스트에서 삭제한다.")
+    void deletePostTest() {
+        Member member = MemberFixture.createMember();
+        var post1 = member.createPost("Title1", "Content1");
+        var post2 = member.createPost("Title2", "Content2");
+
+        Assertions.assertThat(member.getPosts()).containsExactly(post1, post2);
+
+        member.deletePost(post1);
+        Assertions.assertThat(member.getPosts()).containsExactly(post2);
+
+        member.deletePost(post2);
+        Assertions.assertThat(member.getPosts()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Post 삭제시 null이거나 Member의 posts 리스트에 없는 Post 객체일 경우 예외가 발생한다.")
+    void deletePostInvalidTest() {
+        Member member = MemberFixture.createMemberWithId(1L);
+        member.createPost("Title1", "Content1");
+        member.createPost("Title2", "Content2");
+        Post otherPost = MemberFixture.createMemberWithId(2L).createPost("Other Title", "Other Content");
+
+        Assertions.assertThatThrownBy(() -> member.deletePost(null))
+                .isInstanceOf(PostNotFoundException.class)
+                .hasMessage("Post not found");
+
+        Assertions.assertThatThrownBy(() -> member.deletePost(otherPost))
+                .isInstanceOf(PostNotFoundException.class)
+                .hasMessage("Post not found");
+    }
 }
