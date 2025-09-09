@@ -46,6 +46,12 @@ public class Member extends BaseEntity implements UserDetails {
         if (username == null || username.isBlank()) {
             throw new IllegalArgumentException("Username cannot be empty.");
         }
+        if (password == null || password.isBlank()) {
+            throw new IllegalArgumentException("Password cannot be empty.");
+        }
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Name cannot be empty.");
+        }
         if (role == null || role.isBlank()) {
             role = "ROLE_USER";
         }
@@ -68,8 +74,8 @@ public class Member extends BaseEntity implements UserDetails {
 
     public Post createPost(String title, String content) {
         Post newPost = Post.create(this, title, content);
-         this.posts.add(newPost);
-         return newPost;
+        this.posts.add(newPost);
+        return newPost;
     }
 
     public void deletePost(Post post) {
@@ -113,7 +119,7 @@ public class Member extends BaseEntity implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-    
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
