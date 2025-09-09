@@ -38,6 +38,39 @@ class PostTest {
                 .hasMessage("Member cannot be null.");
     }
 
+    @Test
+    @DisplayName("Post 객체 생성시 title이 null 혹은 \"\" 이면 예외가 발생한다.")
+    void postCreationWithInvalidTitle() {
+        Member member = MemberFixture.createMemberWithId(1L);
+        String content = "Test Content";
+
+        assertThatThrownBy(() -> {
+            PostFixture.createPost(member, null, content);
+        }).isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Title cannot be empty.");
+
+        assertThatThrownBy(() -> {
+            PostFixture.createPost(member, "", content);
+        }).isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Title cannot be empty.");
+    }
+
+    @Test
+    @DisplayName("Post 객체 생성시 content이 null 혹은 \"\" 이면 예외가 발생한다.")
+    void postCreationWithInvalidContent() {
+        Member member = MemberFixture.createMemberWithId(1L);
+        String title = "Test Title";
+
+        assertThatThrownBy(() -> {
+            PostFixture.createPost(member, title, null);
+        }).isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Content cannot be empty.");
+
+        assertThatThrownBy(() -> {
+            PostFixture.createPost(member, title, "");
+        }).isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Content cannot be empty.");
+    }
 
     @Test
     @DisplayName("title, content를 입력받아 Post 객체를 수정한다.")
