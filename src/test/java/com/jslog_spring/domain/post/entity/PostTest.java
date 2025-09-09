@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class PostTest {
     @Test
@@ -24,6 +25,19 @@ class PostTest {
         assertThat(post.getTitle()).isEqualTo(title);
         assertThat(post.getContent()).isEqualTo(content);
     }
+
+    @Test
+    @DisplayName("Post 객체 생성시 사용자가 null 이면 예외가 발생한다.")
+    void postCreationWithNullMember() {
+        String title = "Test Title";
+        String content = "Test Content";
+
+        assertThatThrownBy(() -> {
+            PostFixture.createPost(null, title, content);
+        }).isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Member cannot be null.");
+    }
+
 
     @Test
     @DisplayName("title, content를 입력받아 Post 객체를 수정한다.")
@@ -54,4 +68,20 @@ class PostTest {
         assertThat(post.getTitle()).isEqualTo(originalTitle);
         assertThat(post.getContent()).isEqualTo(originalContent);
     }
+
+    @Test
+    @DisplayName("Post 객체 수정시 title, content중 빈 문자열인 인자는 업데이트 되지 않는다.")
+    void postUpdateWithBlank() {
+        String originalTitle = "original title";
+        String originalContent = "original content";
+
+        Member member = MemberFixture.createMemberWithId(1L);
+        Post post = PostFixture.createPost(member, originalTitle, originalContent);
+
+        post.update("", "");
+
+        assertThat(post.getTitle()).isEqualTo(originalTitle);
+        assertThat(post.getContent()).isEqualTo(originalContent);
+    }
+
 }
