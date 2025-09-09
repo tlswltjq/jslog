@@ -9,8 +9,15 @@ public class MemberFixture {
         return Member.create("testUser", "test@example.com", "password");
     }
 
+    public static Member createMember(String username, String password, String name, String role) {
+        return Member.create(username, password, name, role);
+    }
+
     public static Member createMember(String username, String password, String name) {
         return Member.create(username, password, name);
+    }
+    public static Member createMember(String username) {
+        return Member.create(username, "test@example.com", "password");
     }
 
     public static Member createMemberWithId(Long id) {

@@ -1,7 +1,6 @@
 package com.jslog_spring.domain.member.service;
 
 import com.jslog_spring.domain.member.entity.Member;
-import com.jslog_spring.domain.member.exception.InvalidInputValueException;
 import com.jslog_spring.domain.member.exception.MemberNotFoundException;
 import com.jslog_spring.domain.member.exception.UserNameDuplicationException;
 import com.jslog_spring.domain.member.repository.MemberRepository;
@@ -44,9 +43,6 @@ public class MemberServiceImpl implements MemberService {
     }
 
     public Member updateUserName(Member member, String newName) {
-        if (newName == null || newName.isBlank()) {
-            throw new InvalidInputValueException();
-        }
         member.updateName(newName);
         return memberRepository.save(member);
     }

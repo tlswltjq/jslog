@@ -1,9 +1,14 @@
 package com.jslog_spring.domain.member.entity;
 
+import com.jslog_spring.domain.member.exception.InvalidInputValueException;
 import com.jslog_spring.domain.post.entity.Post;
+import com.jslog_spring.domain.post.exception.PostNotFoundException;
 import com.jslog_spring.global.jpa.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -46,6 +51,12 @@ public class Member extends BaseEntity implements UserDetails {
         if (username == null || username.isBlank()) {
             throw new IllegalArgumentException("Username cannot be empty.");
         }
+        if (password == null || password.isBlank()) {
+            throw new IllegalArgumentException("Password cannot be empty.");
+        }
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Name cannot be empty.");
+        }
         if (role == null || role.isBlank()) {
             role = "ROLE_USER";
         }
@@ -63,18 +74,21 @@ public class Member extends BaseEntity implements UserDetails {
     }
 
     public void updateName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new InvalidInputValueException();
+        }
         this.name = name;
     }
 
     public Post createPost(String title, String content) {
         Post newPost = Post.create(this, title, content);
-         this.posts.add(newPost);
-         return newPost;
+        this.posts.add(newPost);
+        return newPost;
     }
 
     public void deletePost(Post post) {
         if (post == null || !this.posts.contains(post)) {
-            throw new IllegalArgumentException("Post not found in member's posts.");
+            throw new PostNotFoundException();
         }
         this.posts.remove(post);
     }
@@ -113,13 +127,16 @@ public class Member extends BaseEntity implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-    
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Member member = (Member) o;
-        return Objects.equals(id, member.id);
+        if (this.id == null || member.id == null) {
+            return false;
+        }
+        return this.id.equals(member.id);
     }
 
     @Override
