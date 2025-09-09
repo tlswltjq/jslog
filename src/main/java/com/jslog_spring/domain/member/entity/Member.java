@@ -1,5 +1,6 @@
 package com.jslog_spring.domain.member.entity;
 
+import com.jslog_spring.domain.member.exception.InvalidInputValueException;
 import com.jslog_spring.domain.post.entity.Post;
 import com.jslog_spring.global.jpa.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -69,6 +70,9 @@ public class Member extends BaseEntity implements UserDetails {
     }
 
     public void updateName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new InvalidInputValueException();
+        }
         this.name = name;
     }
 
