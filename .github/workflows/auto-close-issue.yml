@@ -8,13 +8,15 @@ jobs:
   close-issue:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
-    permissions:
-      issues: write
-      pull-requests: read
     steps:
+      - name: Extract issue number
+        id: extract
+        run: |
+          echo "issue=$(echo '${{ github.event.pull_request.body }}' | grep -oE '#[0-9]+' | tr -d '#')" >> $GITHUB_OUTPUT
+
       - name: Close linked issue
         uses: peter-evans/close-issue@v3
         with:
-          issue-number: ${{ github.event.pull_request.body }}
-          comment: "Closed by pull request #${{ github.event.pull_request.number }}."
+          issue-number: ${{ steps.extract.outputs.issue }}
+          comment: "Closed by pull request #${{ github.event.pull_request.number }}"
           close-reason: completed
