@@ -22,6 +22,23 @@ class MemberTest {
     }
 
     @Test
+    @DisplayName("username(아이디), password, name, role을 입력받아 Member 객체를 생성한다.")
+    void memberCreationWithRoleTest() {
+        String username = "testUsername";
+        String password = "testPassword";
+        String name = "testName";
+        String role = "ROLE_ADMIN";
+
+        Member member = Member.create(username, password, name, role);
+
+        Assertions.assertThat(member).isNotNull();
+        Assertions.assertThat(member.getUsername()).isEqualTo(username);
+        Assertions.assertThat(member.getPassword()).isEqualTo(password);
+        Assertions.assertThat(member.getName()).isEqualTo(name);
+        Assertions.assertThat(member.getRole()).isEqualTo(role);
+    }
+
+    @Test
     @DisplayName("Member객체 생성 시 username이 null이거나 빈 문자열일 경우 예외가 발생한다.")
     void memberCreationInvalidUsernameTest() {
         String password = "testPassword";
