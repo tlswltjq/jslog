@@ -7,10 +7,9 @@ import com.jslog_spring.domain.todo.service.TodoService;
 import com.jslog_spring.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -24,4 +23,23 @@ public class TodoController {
         Todo todo = todoService.createTodo(member, request.category(), request.title(), request.description());
         return ApiResponse.success("201", "Todo created successfully", todo);
     }
+
+    @GetMapping
+    public ApiResponse getTodos(@AuthenticationPrincipal Member member) {
+        List<Todo> allTodos = todoService.getAllTodos(member);
+        return ApiResponse.success("200", "Todos retrieved successfully", allTodos);
+    }
+
+    @GetMapping("/{category}")
+    public ApiResponse getTodosByCategory(@AuthenticationPrincipal Member member, @PathVariable String category) {
+        List<Todo> todosByCategory = todoService.getAllTodos(member, category);
+        return ApiResponse.success("200", "Todos retrieved successfully", todosByCategory);
+    }
+
+    @GetMapping("/{id}")
+    public ApiResponse getTodoById(@AuthenticationPrincipal Member member, @PathVariable Long id) {
+        Todo todo = todoService.getTodoById(member, id);
+        return ApiResponse.success("200", "Todo retrieved successfully", todo);
+    }
+
 }
