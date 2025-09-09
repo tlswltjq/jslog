@@ -77,7 +77,7 @@ public class TodoService {
         todoRepository.delete(todo);
     }
 
-    public void deleteTodosOfCategory(Member member, String category) {
+    public void deleteTodosByCategory(Member member, String category) {
         List<Todo> todos = todoRepository.findByMemberAndCategory(member, category);
         todoRepository.deleteAll(todos);
     }
