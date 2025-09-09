@@ -40,4 +40,18 @@ class PostTest {
         assertThat(post.getContent()).isEqualTo(newContent);
     }
 
+    @Test
+    @DisplayName(" Post 객체 수정시 title, content중 null인 인자는 업데이트 되지 않는다.")
+    void postUpdateWithNull() {
+        String originalTitle = "original title";
+        String originalContent = "original content";
+
+        Member member = MemberFixture.createMemberWithId(1L);
+        Post post = PostFixture.createPost(member, originalTitle, originalContent);
+
+        post.update(null, null);
+
+        assertThat(post.getTitle()).isEqualTo(originalTitle);
+        assertThat(post.getContent()).isEqualTo(originalContent);
+    }
 }
