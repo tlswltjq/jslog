@@ -56,24 +56,6 @@ public class TodoController {
         return ApiResponse.success("200", "Todo updated successfully", response);
     }
 
-    @DeleteMapping("/{id}")
-    public ApiResponse<?> deleteTodo(@AuthenticationPrincipal Member member, @PathVariable Long id) {
-        todoService.deleteTodo(member, id);
-        return ApiResponse.success("204", "Todo deleted successfully");
-    }
-
-    @DeleteMapping("/{category}")
-    public ApiResponse<?> deleteTodosByCategory(@AuthenticationPrincipal Member member, @PathVariable String category) {
-        todoService.deleteTodosByCategory(member, category);
-        return ApiResponse.success("204", "Todos deleted successfully");
-    }
-
-    @DeleteMapping
-    public ApiResponse<?> deleteAllTodos(@AuthenticationPrincipal Member member) {
-        todoService.deleteAllTodos(member);
-        return ApiResponse.success("204", "All todos deleted successfully");
-    }
-
     @PutMapping("/{id}")
     public ApiResponse<TodoResponse> markTodoAsDone(@AuthenticationPrincipal Member member, @PathVariable Long id) {
         Todo todo = todoService.toggleTodo(member, id);
@@ -93,5 +75,23 @@ public class TodoController {
         List<Todo> todos = todoService.undoneAllTodosByCategory(member, category);
         TodoListResponse response = new TodoListResponse(todos);
         return ApiResponse.success("200", "Todos in category marked as undone successfully", response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ApiResponse<?> deleteTodo(@AuthenticationPrincipal Member member, @PathVariable Long id) {
+        todoService.deleteTodo(member, id);
+        return ApiResponse.success("204", "Todo deleted successfully");
+    }
+
+    @DeleteMapping("/{category}")
+    public ApiResponse<?> deleteTodosByCategory(@AuthenticationPrincipal Member member, @PathVariable String category) {
+        todoService.deleteTodosByCategory(member, category);
+        return ApiResponse.success("204", "Todos deleted successfully");
+    }
+
+    @DeleteMapping
+    public ApiResponse<?> deleteAllTodos(@AuthenticationPrincipal Member member) {
+        todoService.deleteAllTodos(member);
+        return ApiResponse.success("204", "All todos deleted successfully");
     }
 }
