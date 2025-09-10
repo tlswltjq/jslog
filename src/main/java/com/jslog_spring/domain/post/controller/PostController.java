@@ -2,6 +2,7 @@ package com.jslog_spring.domain.post.controller;
 
 import com.jslog_spring.domain.member.entity.Member;
 import com.jslog_spring.domain.post.dto.AllPostResponseDto;
+import com.jslog_spring.domain.post.dto.PageResponseDto;
 import com.jslog_spring.domain.post.dto.PostResponseDto;
 import com.jslog_spring.domain.post.entity.Post;
 import com.jslog_spring.domain.post.exception.PostNotFoundException;
@@ -24,10 +25,12 @@ public class PostController {
 
     //프로젝션 보다 본문을 객체로 분리하고 fetch = FetchType.LAZY가 나을듯.
     @GetMapping
-    public Page<AllPostResponseDto> getAllPosts(@RequestParam(value = "page", defaultValue = "0") int page,
-                                                @RequestParam(value = "size", defaultValue = "10") int size) {
+    public ApiResponse<PageResponseDto<AllPostResponseDto>> getAllPosts(@RequestParam(value = "page", defaultValue = "0") int page,
+                                                                        @RequestParam(value = "size", defaultValue = "10") int size) {
         log.info("Get all posts");
-        return postService.getAllPosts(page, size).map(AllPostResponseDto::fromEntity);
+        Page<AllPostResponseDto> pages = postService.getAllPosts(page, size).map(AllPostResponseDto::fromEntity);
+        PageResponseDto<AllPostResponseDto> response = PageResponseDto.from(pages);
+        return ApiResponse.success("200", "포스트 목록 조회 성공", response);
     }
 
     @GetMapping("/{postId}")
@@ -73,10 +76,10 @@ public class PostController {
     }
 
     @DeleteMapping
-    public ApiResponse deletePost(@AuthenticationPrincipal Member member, @RequestBody PostDeletionRequest request) {
+    public ApiResponse<?> deletePost(@AuthenticationPrincipal Member member, @RequestBody PostDeletionRequest request) {
         try {
-        postService.deletePost(member, request.postId());
-        return ApiResponse.success("204", "포스트 삭제 성공");
+            postService.deletePost(member, request.postId());
+            return ApiResponse.success("204", "포스트 삭제 성공");
         } catch (NoSuchElementException | PostNotFoundException e) {
             return ApiResponse.failure("404", e.getMessage());
         }
