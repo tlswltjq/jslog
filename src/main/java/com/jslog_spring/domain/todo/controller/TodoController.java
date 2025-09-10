@@ -2,6 +2,8 @@ package com.jslog_spring.domain.todo.controller;
 
 import com.jslog_spring.domain.member.entity.Member;
 import com.jslog_spring.domain.todo.dto.TodoCreateRequest;
+import com.jslog_spring.domain.todo.dto.TodoListResponse;
+import com.jslog_spring.domain.todo.dto.TodoResponse;
 import com.jslog_spring.domain.todo.dto.TodoUpdateRequest;
 import com.jslog_spring.domain.todo.entity.Todo;
 import com.jslog_spring.domain.todo.service.TodoService;
@@ -20,68 +22,76 @@ public class TodoController {
     private final TodoService todoService;
 
     @PostMapping
-    public ApiResponse createTodo(@AuthenticationPrincipal Member member, @RequestBody TodoCreateRequest request) {
+    public ApiResponse<TodoResponse> createTodo(@AuthenticationPrincipal Member member, @RequestBody TodoCreateRequest request) {
         Todo todo = todoService.createTodo(member, request.category(), request.title(), request.description());
-        return ApiResponse.success("201", "Todo created successfully", todo);
+        TodoResponse response = new TodoResponse(todo);
+        return ApiResponse.success("201", "Todo created successfully", response);
     }
 
     @GetMapping
-    public ApiResponse getTodos(@AuthenticationPrincipal Member member) {
+    public ApiResponse<TodoListResponse> getTodos(@AuthenticationPrincipal Member member) {
         List<Todo> allTodos = todoService.getAllTodos(member);
-        return ApiResponse.success("200", "Todos retrieved successfully", allTodos);
+        TodoListResponse response = new TodoListResponse(allTodos);
+        return ApiResponse.success("200", "Todos retrieved successfully", response);
     }
 
     @GetMapping("/{category}")
-    public ApiResponse getTodosByCategory(@AuthenticationPrincipal Member member, @PathVariable String category) {
+    public ApiResponse<TodoListResponse> getTodosByCategory(@AuthenticationPrincipal Member member, @PathVariable String category) {
         List<Todo> todosByCategory = todoService.getAllTodos(member, category);
-        return ApiResponse.success("200", "Todos retrieved successfully", todosByCategory);
+        TodoListResponse response = new TodoListResponse(todosByCategory);
+        return ApiResponse.success("200", "Todos retrieved successfully", response);
     }
 
     @GetMapping("/{id}")
-    public ApiResponse getTodoById(@AuthenticationPrincipal Member member, @PathVariable Long id) {
+    public ApiResponse<TodoResponse> getTodoById(@AuthenticationPrincipal Member member, @PathVariable Long id) {
         Todo todo = todoService.getTodoById(member, id);
-        return ApiResponse.success("200", "Todo retrieved successfully", todo);
+        TodoResponse response = new TodoResponse(todo);
+        return ApiResponse.success("200", "Todo retrieved successfully", response);
     }
 
     @PutMapping
-    public ApiResponse updateTodo(@AuthenticationPrincipal Member member, @RequestBody TodoUpdateRequest request) {
+    public ApiResponse<TodoResponse> updateTodo(@AuthenticationPrincipal Member member, @RequestBody TodoUpdateRequest request) {
         Todo updatedTodo = todoService.updateTodo(member, request.id(), request.category(), request.title(), request.description());
-        return ApiResponse.success("200", "Todo updated successfully", updatedTodo);
+        TodoResponse response = new TodoResponse(updatedTodo);
+        return ApiResponse.success("200", "Todo updated successfully", response);
     }
 
     @DeleteMapping("/{id}")
-    public ApiResponse deleteTodo(@AuthenticationPrincipal Member member, @PathVariable Long id) {
+    public ApiResponse<?> deleteTodo(@AuthenticationPrincipal Member member, @PathVariable Long id) {
         todoService.deleteTodo(member, id);
-        return ApiResponse.success("200", "Todo deleted successfully");
+        return ApiResponse.success("204", "Todo deleted successfully");
     }
 
     @DeleteMapping("/{category}")
-    public ApiResponse deleteTodosByCategory(@AuthenticationPrincipal Member member, @PathVariable String category) {
+    public ApiResponse<?> deleteTodosByCategory(@AuthenticationPrincipal Member member, @PathVariable String category) {
         todoService.deleteTodosByCategory(member, category);
-        return ApiResponse.success("200", "Todos deleted successfully");
+        return ApiResponse.success("204", "Todos deleted successfully");
     }
 
     @DeleteMapping
-    public ApiResponse deleteAllTodos(@AuthenticationPrincipal Member member) {
+    public ApiResponse<?> deleteAllTodos(@AuthenticationPrincipal Member member) {
         todoService.deleteAllTodos(member);
-        return ApiResponse.success("200", "All todos deleted successfully");
+        return ApiResponse.success("204", "All todos deleted successfully");
     }
 
     @PutMapping("/{id}")
-    public ApiResponse markTodoAsDone(@AuthenticationPrincipal Member member, @PathVariable Long id) {
-        todoService.toggleTodo(member, id);
-        return ApiResponse.success("200", "Todo marked as done successfully");
+    public ApiResponse<TodoResponse> markTodoAsDone(@AuthenticationPrincipal Member member, @PathVariable Long id) {
+        Todo todo = todoService.toggleTodo(member, id);
+        TodoResponse response = new TodoResponse(todo);
+        return ApiResponse.success("200", "Todo marked as done successfully", response);
     }
 
     @PutMapping("/{category}/done")
-    public ApiResponse markTodosByCategoryAsDone(@AuthenticationPrincipal Member member, @PathVariable String category) {
+    public ApiResponse<TodoListResponse> markTodosByCategoryAsDone(@AuthenticationPrincipal Member member, @PathVariable String category) {
         List<Todo> todos = todoService.doneAllTodosByCategory(member, category);
-        return ApiResponse.success("200", "Todos in category marked as done successfully", todos);
+        TodoListResponse response = new TodoListResponse(todos);
+        return ApiResponse.success("200", "Todos in category marked as done successfully", response);
     }
 
     @PutMapping("/{category}/undone")
-    public ApiResponse markTodosByCategoryAsUndone(@AuthenticationPrincipal Member member, @PathVariable String category) {
+    public ApiResponse<TodoListResponse> markTodosByCategoryAsUndone(@AuthenticationPrincipal Member member, @PathVariable String category) {
         List<Todo> todos = todoService.undoneAllTodosByCategory(member, category);
-        return ApiResponse.success("200", "Todos in category marked as undone successfully", todos);
+        TodoListResponse response = new TodoListResponse(todos);
+        return ApiResponse.success("200", "Todos in category marked as undone successfully", response);
     }
 }
