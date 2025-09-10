@@ -44,10 +44,10 @@ public class TodoService {
         return todoRepository.save(todo);
     }
 
-    public void doneTodo(Member member, Long id) {
+    public Todo doneTodo(Member member, Long id) {
         Todo todo = getTodoById(member, id);
         todo.done();
-        todoRepository.save(todo);
+        return todoRepository.save(todo);
     }
 
     private void doneTodo(Todo todo) {
@@ -55,10 +55,10 @@ public class TodoService {
         todoRepository.save(todo);
     }
 
-    public void undoneTodo(Member member, Long id) {
+    public Todo undoneTodo(Member member, Long id) {
         Todo todo = getTodoById(member, id);
         todo.undone();
-        todoRepository.save(todo);
+        return todoRepository.save(todo);
     }
 
     private void undoneTodo(Todo todo) {
@@ -66,10 +66,10 @@ public class TodoService {
         todoRepository.save(todo);
     }
 
-    public void toggleTodo(Member member, Long id) {
+    public Todo toggleTodo(Member member, Long id) {
         Todo todo = getTodoById(member, id);
         todo.toggle();
-        todoRepository.save(todo);
+        return todoRepository.save(todo);
     }
 
     public void deleteTodo(Member member, Long id) {
