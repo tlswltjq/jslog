@@ -77,7 +77,7 @@ public class TodoService {
         todoRepository.delete(todo);
     }
 
-    public void deleteTodosOfCategory(Member member, String category) {
+    public void deleteTodosByCategory(Member member, String category) {
         List<Todo> todos = todoRepository.findByMemberAndCategory(member, category);
         todoRepository.deleteAll(todos);
     }
@@ -87,13 +87,15 @@ public class TodoService {
         todoRepository.deleteAll(todos);
     }
 
-    public void doneAllTodosOfCategory(Member member, String category) {
+    public List<Todo> doneAllTodosByCategory(Member member, String category) {
         List<Todo> todos = todoRepository.findByMemberAndCategory(member, category);
         todos.forEach(this::doneTodo);
+        return todos;
     }
 
-    public void undoneAllTodosOfCategory(Member member, String category) {
+    public List<Todo> undoneAllTodosByCategory(Member member, String category) {
         List<Todo> todos = todoRepository.findByMemberAndCategory(member, category);
         todos.forEach(this::undoneTodo);
+        return todos;
     }
 }

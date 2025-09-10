@@ -475,7 +475,7 @@ public class TodoServiceTest {
                 .thenReturn(List.of(todo1, todo2));
 
         // when
-        todoService.deleteTodosOfCategory(author, category);
+        todoService.deleteTodosByCategory(author, category);
 
         // then
         verify(todoRepository).deleteAll(List.of(todo1, todo2));
@@ -490,7 +490,7 @@ public class TodoServiceTest {
         when(todoRepository.findByMemberAndCategory(author, category)).thenReturn(List.of());
 
         // when
-        todoService.deleteTodosOfCategory(author, category);
+        todoService.deleteTodosByCategory(author, category);
 
         // then
         verify(todoRepository).deleteAll(List.of());
@@ -514,7 +514,7 @@ public class TodoServiceTest {
 
     @Test
     @DisplayName("사용자는 특정 카테고리의 모든 할 일을 완료 상태로 변경할 수 있다.")
-    void doneAllTodosOfCategoryTest() {
+    void doneAllTodosByCategoryTest() {
         // given
         Member author = createMember();
         String category = "Work";
@@ -530,7 +530,7 @@ public class TodoServiceTest {
         when(todoRepository.save(any(Todo.class))).thenAnswer(inv -> inv.getArgument(0));
 
         // when
-        todoService.doneAllTodosOfCategory(author, category);
+        todoService.doneAllTodosByCategory(author, category);
 
         // then
         assertThat(todo1.isDone()).isTrue();
@@ -539,7 +539,7 @@ public class TodoServiceTest {
 
     @Test
     @DisplayName("사용자는 특정 카테고리의 모든 할 일을 미완료 상태로 변경할 수 있다.")
-    void undoneAllTodosOfCategoryTest() {
+    void undoneAllTodosByCategoryTest() {
         // given
         Member author = createMember();
         String category = "Work";
@@ -554,7 +554,7 @@ public class TodoServiceTest {
         when(todoRepository.save(any(Todo.class))).thenAnswer(inv -> inv.getArgument(0));
 
         // when
-        todoService.undoneAllTodosOfCategory(author, category);
+        todoService.undoneAllTodosByCategory(author, category);
 
         // then
         assertThat(todo1.isDone()).isFalse();
