@@ -7,6 +7,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -17,6 +19,15 @@ public class MemberAttr extends BaseEntity {
     private Member member;
     @Column(nullable = true)
     private String accessToken;
-    @Column(nullable = true)
-    private String refreshToken;
+
+    private LocalDateTime lastLoginAt;
+
+    public void updateAccessToken(String token) {
+        this.accessToken = token;
+        this.lastLoginAt = LocalDateTime.now();
+    }
+
+    public void logout() {
+        this.accessToken = null;
+    }
 }
