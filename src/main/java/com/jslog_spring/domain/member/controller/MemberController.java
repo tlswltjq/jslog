@@ -13,8 +13,6 @@ import org.springframework.data.util.Pair;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Slf4j
 @RestController
 @RequestMapping("/api/auth")
@@ -28,13 +26,11 @@ public class MemberController {
     record SignInRequest(String username, String password) {
     }
 
-//    record SignInResponse(String accessToken) { }
-
     @PostMapping("/signup")
     public ApiResponse<JoinResponse> signUp(@RequestBody JoinRequest request) {
         log.info("회원 가입 요청: username={}, name={}", request.username, request.name);
         try {
-            Member member = memberService.join(request.username, request.password, request.name);
+            Member member = memberService.signUp(request.username, request.password, request.name);
             JoinResponse response = new JoinResponse(member);
             return ApiResponse.success("201", "회원가입 성공", response);
         } catch (UserNameDuplicationException e) {

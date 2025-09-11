@@ -28,7 +28,7 @@ public class MemberServiceImpl implements MemberService {
     private final JwtUtil jwtUtil;
     private final StringRedisTemplate redisTemplate;
 
-    public Member join(String username, String password, String name) {
+    public Member signUp(String username, String password, String name) {
         String encodedPassword = passwordEncoder.encode(password);
         Member member = Member.create(username, encodedPassword, name);
         if (memberRepository.existsByUsername(username)) {

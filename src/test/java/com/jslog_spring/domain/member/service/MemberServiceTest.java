@@ -54,7 +54,7 @@ public class MemberServiceTest {
 
     @Test
     @DisplayName("username(아이디), password, name을 입력받아 회원가입에 성공하고 Member 객체를 반환한다.")
-    void joinTest() {
+    void signUpTest() {
         //given
         String username = "test@example.com";
         String password = "password";
@@ -66,7 +66,7 @@ public class MemberServiceTest {
         when(memberRepository.existsByUsername(any(String.class))).thenReturn(false);
         when(memberRepository.save((any(Member.class)))).thenReturn(exceptedMember);
 
-        Member joinedMember = memberService.join(username, password, name);
+        Member joinedMember = memberService.signUp(username, password, name);
 
         //then
         assertThat(joinedMember).isNotNull();
@@ -77,7 +77,7 @@ public class MemberServiceTest {
 
     @Test
     @DisplayName("회원가입시 username(아이디)이 중복되면 예외가 발생한다.")
-    void joinTest_UsernameDuplicationException() {
+    void signUpTest_UsernameDuplicationException() {
         //given
         String username = "already_exist@username.com";
         String password = "password";
@@ -87,7 +87,7 @@ public class MemberServiceTest {
         when(memberRepository.existsByUsername(any(String.class))).thenReturn(true);
 
         assertThatThrownBy(() -> {
-            memberService.join(username, password, name);
+            memberService.signUp(username, password, name);
         }).isInstanceOf(UserNameDuplicationException.class)
                 .isInstanceOfSatisfying(UserNameDuplicationException.class, e -> {
                             assertThat(e.getErrorCode()).isEqualTo(USERNAME_DUPLICATION);
