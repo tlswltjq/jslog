@@ -15,6 +15,8 @@ public class MemberAttr extends BaseEntity {
     @Id
     @OneToOne(fetch = FetchType.EAGER)
     private Member member;
+    @Column(nullable = true)
     private String accessToken;
+    @Column(nullable = true)
     private String refreshToken;
 }
