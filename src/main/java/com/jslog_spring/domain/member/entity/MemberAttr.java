@@ -4,6 +4,7 @@ package com.jslog_spring.domain.member.entity;
 import com.jslog_spring.global.jpa.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -21,6 +22,21 @@ public class MemberAttr extends BaseEntity {
     private String accessToken;
 
     private LocalDateTime lastLoginAt;
+
+    @Builder(access = AccessLevel.PRIVATE)
+    private MemberAttr(Member member, String accessToken, LocalDateTime lastLoginAt) {
+        this.member = member;
+        this.accessToken = accessToken;
+        this.lastLoginAt = lastLoginAt;
+    }
+
+    public static MemberAttr create(Member member, String accessToken) {
+        return MemberAttr.builder()
+                .member(member)
+                .accessToken(accessToken)
+                .lastLoginAt(LocalDateTime.now())
+                .build();
+    }
 
     public void updateAccessToken(String token) {
         this.accessToken = token;
