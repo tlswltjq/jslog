@@ -75,6 +75,17 @@ public class MemberController {
                 .build();
         log.info("토큰 재발급 완료");
         return ApiResponse.success("200", "토큰 재발급 성공.", response, List.of(cookie));
+    }
 
+    @PostMapping("/signout")
+    public ApiResponse signOut(@AuthenticationPrincipal Member member) {
+        memberService.signOut(member.getUsername());
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", null)
+                .httpOnly(true)
+                .secure(true).maxAge(0)
+                .path("/")
+                .build();
+
+        return ApiResponse.success("200", "로그아웃 성공", null, List.of(cookie));
     }
 }
