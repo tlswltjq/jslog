@@ -94,12 +94,12 @@ public class MemberServiceImpl implements MemberService {
     }
 
     public void signOut(String username) {
+        redisTemplate.delete(username);
+
         MemberAttr memberAttr = memberAttrRepository.findById(username)
                 .orElseThrow(RuntimeException::new);
 
         memberAttr.signOut();
         memberAttrRepository.save(memberAttr);
-
-        redisTemplate.delete(username);
     }
 }
