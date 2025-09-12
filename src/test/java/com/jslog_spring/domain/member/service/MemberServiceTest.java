@@ -318,13 +318,13 @@ public class MemberServiceTest {
         MemberAttr memberAttr = MemberAttrFixture.create(username);
 
         when(memberAttrRepository.findById(anyString())).thenReturn(Optional.of(memberAttr));
-        LocalDateTime lastLoginAt = memberAttr.getLastLoginAt();
+        LocalDateTime lastLogOutAt = memberAttr.getLastLogOutAt();
         Thread.sleep(1);
         memberService.signOut(username);
 
         verify(memberAttrRepository, times(1)).findById(username);
         verify(memberAttrRepository, times(1)).save(any());
         verify(redisTemplate).delete(username);
-        assertThat(memberAttr.getLastLoginAt()).isAfter(lastLoginAt);
+        assertThat(memberAttr.getLastLogOutAt()).isAfter(lastLogOutAt);
     }
 }
