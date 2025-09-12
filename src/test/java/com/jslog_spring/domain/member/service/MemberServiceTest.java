@@ -28,6 +28,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -311,16 +312,19 @@ public class MemberServiceTest {
     }
 
     @Test
-    @DisplayName("로그아웃 성공 시, MemberAttr의 accessToken을 null로 업데이트하고 Redis에서 refreshToken을 삭제한다")
-    void signOutTest() {
+    @DisplayName("로그아웃 성공 시 Redis에서 refreshToken을 삭제한다")
+    void signOutTest() throws InterruptedException {
         String username = "testUser";
         MemberAttr memberAttr = MemberAttrFixture.create(username);
 
         when(memberAttrRepository.findById(anyString())).thenReturn(Optional.of(memberAttr));
+        LocalDateTime lastLoginAt = memberAttr.getLastLoginAt();
+        Thread.sleep(1);
         memberService.signOut(username);
 
         verify(memberAttrRepository, times(1)).findById(username);
         verify(memberAttrRepository, times(1)).save(any());
         verify(redisTemplate).delete(username);
+        assertThat(memberAttr.getLastLoginAt()).isAfter(lastLoginAt);
     }
 }
