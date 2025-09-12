@@ -10,8 +10,12 @@ import com.jslog_spring.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -42,8 +46,15 @@ public class MemberController {
     public ApiResponse<TokenResponse> signIn(@RequestBody SignInRequest request) {
         log.info("로그인 요청: username={}", request.username);
         Pair<String, String> tokens = memberService.signIn(request.username, request.password);
-        TokenResponse response = new TokenResponse(tokens.getFirst(), tokens.getSecond());
-        return ApiResponse.success("200", "로그인 성공", response);
+
+        TokenResponse response = new TokenResponse(tokens.getFirst());
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", tokens.getSecond())
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(60 * 60 * 24 * 14) // 2주
+                .build();
+        return ApiResponse.success("200", "로그인 성공", response, List.of(cookie));
     }
 
     @GetMapping("/me")
@@ -52,13 +63,30 @@ public class MemberController {
         return ApiResponse.success("200", "내 정보 조회 성공", response);
     }
 
-    record ReissueRequest(String refreshToken) {}
     @PostMapping("/reissue")
-    public ApiResponse reissue(@RequestBody ReissueRequest request) {
-        Pair<String, String> reissued = memberService.reissue(request.refreshToken);
-        TokenResponse response = new TokenResponse(reissued.getFirst(), reissued.getSecond());
-        log.info("토큰 재발급 완료");
-        return ApiResponse.success("200", "토큰 재발급 성공.", response);
+    public ApiResponse reissue(@CookieValue("refreshToken") String refreshToken) {
+        Pair<String, String> reissued = memberService.reissue(refreshToken);
 
+        TokenResponse response = new TokenResponse(reissued.getFirst());
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", reissued.getSecond())
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(60 * 60 * 24 * 14) // 2주
+                .build();
+        log.info("토큰 재발급 완료");
+        return ApiResponse.success("200", "토큰 재발급 성공.", response, List.of(cookie));
+    }
+
+    @PostMapping("/signout")
+    public ApiResponse signOut(@AuthenticationPrincipal Member member) {
+        LocalDateTime time = memberService.signOut(member.getUsername());
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", null)
+                .httpOnly(true)
+                .secure(true).maxAge(0)
+                .path("/")
+                .build();
+
+        return ApiResponse.success("200", "로그아웃 성공", time, List.of(cookie));
     }
 }

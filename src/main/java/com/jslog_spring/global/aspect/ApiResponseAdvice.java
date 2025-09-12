@@ -29,6 +29,11 @@ public class ApiResponseAdvice implements ResponseBodyAdvice<ApiResponse<?>> {
             ServerHttpRequest request,
             ServerHttpResponse response
     ) {
+        if (body.getCookies() != null) {
+            body.getCookies().forEach(cookie ->
+                    response.getHeaders().add("Set-Cookie", cookie.toString())
+            );
+        }
         // 공통 헤더 추가 가능
         response.getHeaders().add("X-API-VERSION", "1.0");
 

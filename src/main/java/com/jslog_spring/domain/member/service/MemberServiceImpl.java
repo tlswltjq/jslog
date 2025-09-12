@@ -17,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -58,7 +59,7 @@ public class MemberServiceImpl implements MemberService {
         String accessToken = jwtUtil.generateAccessToken(Map.of("username", authentication.getName()));
         String refreshToken = jwtUtil.generateRefreshToken(Map.of("username", authentication.getName()));
 
-        memberAttrRepository.save(MemberAttr.create(username, accessToken));
+        memberAttrRepository.save(MemberAttr.create(username));
         redisTemplate.opsForValue().set(
                 authentication.getName(),
                 refreshToken,
@@ -82,7 +83,7 @@ public class MemberServiceImpl implements MemberService {
         String newAccessToken = jwtUtil.generateAccessToken(Map.of("username", username));
         String newRefreshToken = jwtUtil.generateRefreshToken(Map.of("username", username));
 
-        memberAttrRepository.save(MemberAttr.create(username, newAccessToken));
+        memberAttrRepository.save(MemberAttr.create(username));
         redisTemplate.opsForValue().set(
                 username,
                 newRefreshToken,
@@ -93,12 +94,14 @@ public class MemberServiceImpl implements MemberService {
         return Pair.of(newAccessToken, newRefreshToken);
     }
 
-    public void signOut(String username) {
+    public LocalDateTime signOut(String username) {
+        redisTemplate.delete(username);
+
         MemberAttr memberAttr = memberAttrRepository.findById(username)
                 .orElseThrow(RuntimeException::new);
-        memberAttr.signOut();
 
+        LocalDateTime signOut = memberAttr.signOut();
         memberAttrRepository.save(memberAttr);
-        redisTemplate.delete(username);
+        return signOut;
     }
 }

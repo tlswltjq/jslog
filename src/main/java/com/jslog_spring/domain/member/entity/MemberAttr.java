@@ -16,32 +16,36 @@ import java.time.LocalDateTime;
 public class MemberAttr extends BaseEntity {
     @Id
     private String username;
-    @Column(nullable = true)
-    private String accessToken;
 
     private LocalDateTime lastLoginAt;
+    private LocalDateTime lastLogOutAt;
 
     @Builder(access = AccessLevel.PRIVATE)
-    private MemberAttr(String username, String accessToken, LocalDateTime lastLoginAt) {
+    private MemberAttr(String username, LocalDateTime lastLoginAt, LocalDateTime lastLogOutAt) {
         this.username = username;
-        this.accessToken = accessToken;
         this.lastLoginAt = lastLoginAt;
+        this.lastLogOutAt = lastLogOutAt;
     }
 
-    public static MemberAttr create(String username, String accessToken) {
+    public static MemberAttr create(String username) {
         return MemberAttr.builder()
                 .username(username)
-                .accessToken(accessToken)
                 .lastLoginAt(LocalDateTime.now())
+                .lastLogOutAt(LocalDateTime.MIN)
                 .build();
     }
 
-    public void updateAccessToken(String token) {
-        this.accessToken = token;
+    public LocalDateTime updateLoginTime() {
         this.lastLoginAt = LocalDateTime.now();
+        return this.lastLoginAt;
     }
 
-    public void signOut() {
-        this.accessToken = null;
+    public LocalDateTime updateLogOutTime() {
+        this.lastLogOutAt = LocalDateTime.now();
+        return this.lastLogOutAt;
+    }
+
+    public LocalDateTime signOut() {
+        return updateLogOutTime();
     }
 }
