@@ -45,7 +45,7 @@ public class MemberAttr extends BaseEntity {
         return this.lastLogOutAt;
     }
 
-    public void signOut() {
-        updateLogOutTime();
+    public LocalDateTime signOut() {
+        return updateLogOutTime();
     }
 }

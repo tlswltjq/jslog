@@ -17,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -93,13 +94,14 @@ public class MemberServiceImpl implements MemberService {
         return Pair.of(newAccessToken, newRefreshToken);
     }
 
-    public void signOut(String username) {
+    public LocalDateTime signOut(String username) {
         redisTemplate.delete(username);
 
         MemberAttr memberAttr = memberAttrRepository.findById(username)
                 .orElseThrow(RuntimeException::new);
 
-        memberAttr.signOut();
+        LocalDateTime signOut = memberAttr.signOut();
         memberAttrRepository.save(memberAttr);
+        return signOut;
     }
 }

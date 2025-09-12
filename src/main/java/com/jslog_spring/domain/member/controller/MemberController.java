@@ -14,6 +14,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -79,13 +80,13 @@ public class MemberController {
 
     @PostMapping("/signout")
     public ApiResponse signOut(@AuthenticationPrincipal Member member) {
-        memberService.signOut(member.getUsername());
+        LocalDateTime time = memberService.signOut(member.getUsername());
         ResponseCookie cookie = ResponseCookie.from("refreshToken", null)
                 .httpOnly(true)
                 .secure(true).maxAge(0)
                 .path("/")
                 .build();
 
-        return ApiResponse.success("200", "로그아웃 성공", null, List.of(cookie));
+        return ApiResponse.success("200", "로그아웃 성공", time, List.of(cookie));
     }
 }
