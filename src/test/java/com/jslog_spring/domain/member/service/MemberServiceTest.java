@@ -1,12 +1,15 @@
 package com.jslog_spring.domain.member.service;
 
 import com.jslog_spring.domain.member.entity.Member;
+import com.jslog_spring.domain.member.entity.MemberAttr;
 import com.jslog_spring.domain.member.exception.InvalidInputValueException;
 import com.jslog_spring.domain.member.exception.MemberNotFoundException;
 import com.jslog_spring.domain.member.exception.UserNameDuplicationException;
+import com.jslog_spring.domain.member.repository.MemberAttrRepository;
 import com.jslog_spring.domain.member.repository.MemberRepository;
 import com.jslog_spring.global.exception.TokenNotFoundException;
 import com.jslog_spring.global.security.JwtUtil;
+import fixture.MemberAttrFixture;
 import fixture.MemberFixture;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -41,6 +44,8 @@ import static org.mockito.Mockito.*;
 public class MemberServiceTest {
     @Mock
     private MemberRepository memberRepository;
+    @Mock
+    private MemberAttrRepository memberAttrRepository;
     @Mock
     private PasswordEncoder passwordEncoder;
     @Mock
@@ -162,6 +167,7 @@ public class MemberServiceTest {
                 );
     }
 
+    //FIXME : 로그아웃시 토큰 업데이트 반영하기
     @Test
     @DisplayName("signIn 성공 시, accessToken과 refreshToken을 반환하고 Redis에 refreshToken을 저장한다")
     void signInSuccess() {
@@ -192,6 +198,7 @@ public class MemberServiceTest {
         verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
         verify(jwtUtil).generateAccessToken(anyMap());
         verify(jwtUtil).generateRefreshToken(anyMap());
+        verify(memberAttrRepository, times(1)).save(any());
         verify(valueOps).set(eq(username), eq(refreshToken), eq(365L), eq(TimeUnit.DAYS));
     }
 
@@ -243,6 +250,7 @@ public class MemberServiceTest {
         verify(valueOps).get(username);
         verify(jwtUtil).generateAccessToken(Map.of("username", username));
         verify(jwtUtil).generateRefreshToken(Map.of("username", username));
+        verify(memberAttrRepository, times(1)).save(any());
         verify(valueOps).set(eq(username), eq(expectedRefreshToken), eq(365L), eq(TimeUnit.DAYS));
 
         assertThat(reissued.getFirst()).isEqualTo(expectedAccessToken);
@@ -302,4 +310,17 @@ public class MemberServiceTest {
                 .isInstanceOf(TokenNotFoundException.class);
     }
 
+    @Test
+    @DisplayName("로그아웃 성공 시, MemberAttr의 accessToken을 null로 업데이트하고 Redis에서 refreshToken을 삭제한다")
+    void signOutTest() {
+        String username = "testUser";
+        MemberAttr memberAttr = MemberAttrFixture.create(username);
+
+        when(memberAttrRepository.findById(anyString())).thenReturn(Optional.of(memberAttr));
+        memberService.signOut(username);
+
+        verify(memberAttrRepository, times(1)).findById(username);
+        verify(memberAttrRepository, times(1)).save(any());
+        verify(redisTemplate).delete(username);
+    }
 }

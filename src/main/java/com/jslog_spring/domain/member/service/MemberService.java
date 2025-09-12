@@ -9,4 +9,5 @@ public interface MemberService {
     Member updateUserName(Member member, String newName);
     Pair<String, String> signIn(String username, String password);
     Pair<String, String> reissue(String refreshToken);
+    void signOut(String username);
 }
