@@ -1,8 +1,10 @@
 package com.jslog_spring.domain.member.service;
 
 import com.jslog_spring.domain.member.entity.Member;
+import com.jslog_spring.domain.member.entity.MemberAttr;
 import com.jslog_spring.domain.member.exception.MemberNotFoundException;
 import com.jslog_spring.domain.member.exception.UserNameDuplicationException;
+import com.jslog_spring.domain.member.repository.MemberAttrRepository;
 import com.jslog_spring.domain.member.repository.MemberRepository;
 import com.jslog_spring.global.exception.TokenNotFoundException;
 import com.jslog_spring.global.security.JwtUtil;
@@ -23,12 +25,13 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
+    private final MemberAttrRepository memberAttrRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
     private final StringRedisTemplate redisTemplate;
 
-    public Member join(String username, String password, String name) {
+    public Member signUp(String username, String password, String name) {
         String encodedPassword = passwordEncoder.encode(password);
         Member member = Member.create(username, encodedPassword, name);
         if (memberRepository.existsByUsername(username)) {
@@ -55,6 +58,7 @@ public class MemberServiceImpl implements MemberService {
         String accessToken = jwtUtil.generateAccessToken(Map.of("username", authentication.getName()));
         String refreshToken = jwtUtil.generateRefreshToken(Map.of("username", authentication.getName()));
 
+        memberAttrRepository.save(MemberAttr.create(username, accessToken));
         redisTemplate.opsForValue().set(
                 authentication.getName(),
                 refreshToken,
@@ -78,6 +82,7 @@ public class MemberServiceImpl implements MemberService {
         String newAccessToken = jwtUtil.generateAccessToken(Map.of("username", username));
         String newRefreshToken = jwtUtil.generateRefreshToken(Map.of("username", username));
 
+        memberAttrRepository.save(MemberAttr.create(username, newAccessToken));
         redisTemplate.opsForValue().set(
                 username,
                 newRefreshToken,
@@ -86,5 +91,14 @@ public class MemberServiceImpl implements MemberService {
         );
 
         return Pair.of(newAccessToken, newRefreshToken);
+    }
+
+    public void signOut(String username) {
+        MemberAttr memberAttr = memberAttrRepository.findById(username)
+                .orElseThrow(RuntimeException::new);
+        memberAttr.signOut();
+
+        memberAttrRepository.save(memberAttr);
+        redisTemplate.delete(username);
     }
 }
