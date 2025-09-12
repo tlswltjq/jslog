@@ -14,25 +14,23 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberAttr extends BaseEntity {
-    //NOTE : 레포지토리 시그니처 Long 으로 접근고려시 @MapsId 으로 변경
     @Id
-    @OneToOne(fetch = FetchType.EAGER)
-    private Member member;
+    private String username;
     @Column(nullable = true)
     private String accessToken;
 
     private LocalDateTime lastLoginAt;
 
     @Builder(access = AccessLevel.PRIVATE)
-    private MemberAttr(Member member, String accessToken, LocalDateTime lastLoginAt) {
-        this.member = member;
+    private MemberAttr(String username, String accessToken, LocalDateTime lastLoginAt) {
+        this.username = username;
         this.accessToken = accessToken;
         this.lastLoginAt = lastLoginAt;
     }
 
-    public static MemberAttr create(Member member, String accessToken) {
+    public static MemberAttr create(String username, String accessToken) {
         return MemberAttr.builder()
-                .member(member)
+                .username(username)
                 .accessToken(accessToken)
                 .lastLoginAt(LocalDateTime.now())
                 .build();

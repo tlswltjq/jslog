@@ -1,6 +1,5 @@
 package com.jslog_spring.domain.member.entity;
 
-import fixture.MemberFixture;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -12,12 +11,12 @@ class MemberAttrTest {
     @Test
     @DisplayName("사용자 부가정보를 저장하는 엔티티 MemberAttr 생성 테스트")
     void MemberAttrCreationTest() {
-        Member member = MemberFixture.createMember();
+        String username = "username";
         String accessToken = "accessToken";
-        MemberAttr memberAttr = MemberAttr.create(member, accessToken);
+        MemberAttr memberAttr = MemberAttr.create(username, accessToken);
 
         assertThat(memberAttr).isNotNull();
-        assertThat(memberAttr.getMember()).isEqualTo(member);
+        assertThat(memberAttr.getUsername()).isEqualTo(username);
         assertThat(memberAttr.getAccessToken()).isEqualTo(accessToken);
         assertThat(memberAttr.getLastLoginAt()).isNotNull();
     }
@@ -25,9 +24,9 @@ class MemberAttrTest {
     @Test
     @DisplayName("토큰이 업데이트 될 때 마지막 로그인 시간이 갱신된다.")
     void updateAccessTokenTest() {
-        Member member = MemberFixture.createMember();
+        String username = "username";
         String initialToken = "initialToken";
-        MemberAttr memberAttr = MemberAttr.create(member, initialToken);
+        MemberAttr memberAttr = MemberAttr.create(username, initialToken);
         String newToken = "newAccessToken";
         LocalDateTime initialTime = memberAttr.getLastLoginAt();
         try {
@@ -45,9 +44,9 @@ class MemberAttrTest {
     @Test
     @DisplayName("로그아웃시 토큰이 null로 변경된다.")
     void logoutTest() {
-        Member member = MemberFixture.createMember();
+        String username = "username";
         String accessToken = "accessToken";
-        MemberAttr memberAttr = MemberAttr.create(member, accessToken);
+        MemberAttr memberAttr = MemberAttr.create(username, accessToken);
         memberAttr.logout();
         assertThat(memberAttr.getAccessToken()).isNull();
     }
