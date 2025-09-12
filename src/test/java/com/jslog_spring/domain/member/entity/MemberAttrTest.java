@@ -47,7 +47,7 @@ class MemberAttrTest {
         String username = "username";
         String accessToken = "accessToken";
         MemberAttr memberAttr = MemberAttr.create(username, accessToken);
-        memberAttr.logout();
+        memberAttr.signOut();
         assertThat(memberAttr.getAccessToken()).isNull();
     }
 }

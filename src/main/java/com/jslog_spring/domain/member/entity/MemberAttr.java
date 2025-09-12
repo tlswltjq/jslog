@@ -41,7 +41,7 @@ public class MemberAttr extends BaseEntity {
         this.lastLoginAt = LocalDateTime.now();
     }
 
-    public void logout() {
+    public void signOut() {
         this.accessToken = null;
     }
 }
