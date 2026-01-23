@@ -1,0 +1,43 @@
+package com.jslog_spring.common.error;
+
+import lombok.Getter;
+import org.springframework.http.HttpStatus;
+
+@Getter
+public enum ErrorCode {
+    // Common
+    INVALID_INPUT_VALUE("C001", "Invalid Input Value", HttpStatus.BAD_REQUEST),
+    METHOD_NOT_ALLOWED("C002", "Method Not Allowed", HttpStatus.METHOD_NOT_ALLOWED),
+    INTERNAL_SERVER_ERROR("C003", "Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR),
+
+    // Member
+    MEMBER_NOT_FOUND("M001", "사용자를 찾을 수 없습니다", HttpStatus.NOT_FOUND),
+    USER_ID_DUPLICATION("M002", "이미 사용중인 사용자 ID 입니다", HttpStatus.CONFLICT),
+    EMAIL_DUPLICATION("M003", "이미 사용중인 Email 입니다", HttpStatus.CONFLICT),
+    PASSWORD_MISMATCH("M004", "비밀번호가 일치하지 않습니다.", HttpStatus.BAD_REQUEST),
+    SAME_PASSWORD("M005", "새 비밀번호는 기존 비밀번호와 다르게 설정해야 합니다.", HttpStatus.BAD_REQUEST),
+    PASSWORD_POLICY_VIOLATION("M006", "비밀번호는 영문, 숫자, 특수문자를 포함하여 8자 이상이어야 합니다.", HttpStatus.BAD_REQUEST),
+    NICKNAME_POLICY_VIOLATION("M007", "사용할 수 없는 닉네임이 포함되어 있습니다.", HttpStatus.BAD_REQUEST),
+    USER_ID_FORMAT_INVALID("M008", "사용자 ID는 5자 이상 20자 이하이어야 합니다.", HttpStatus.BAD_REQUEST),
+    BIO_POLICY_VIOLATION("M009", "소개는 500자를 넘거나 공백일 수 없습니다.", HttpStatus.BAD_REQUEST),
+    INVALID_SEARCH_CONDITION("M010", "유효하지 않은 검색 조건입니다.", HttpStatus.BAD_REQUEST),
+    MEMBER_NOT_ACTIVATED("M011", "휴면 처리된 계정입니다. 관리자에게 문의하세요.", HttpStatus.FORBIDDEN),
+
+    // Auth
+    LOGIN_FAILED("A001", "아이디 또는 비밀번호가 일치하지 않습니다.", HttpStatus.UNAUTHORIZED),
+    INVALID_TOKEN("A002", "유효하지 않은 토큰입니다.", HttpStatus.UNAUTHORIZED),
+    ACCESS_DENIED("A003", "접근이 거부되었습니다.", HttpStatus.FORBIDDEN),
+    EXPIRED_TOKEN("A004", "만료된 토큰입니다.", HttpStatus.UNAUTHORIZED),
+    REFRESH_TOKEN_NOT_FOUND("A005", "리프레시 토큰을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    UNAUTHORIZED_TOKEN("A006", "권한이 없는 토큰입니다.", HttpStatus.UNAUTHORIZED);
+
+    private final String code;
+    private final String message;
+    private final HttpStatus status;
+
+    ErrorCode(String code, String message, HttpStatus status) {
+        this.code = code;
+        this.message = message;
+        this.status = status;
+    }
+}
