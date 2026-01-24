@@ -1,5 +1,6 @@
 package com.jslog_spring.backlog.domain.model;
 
+import com.jslog_spring.backlog.exception.BacklogOwnerMismatchException;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -26,7 +27,7 @@ public class Backlog {
 
     @Builder
     private Backlog(Long id, Long ownedBy, String name, String desc, LocalDateTime dueDate, Boolean isDone,
-            LocalDateTime createdAt, LocalDateTime updatedAt) {
+                    LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.ownedBy = ownedBy;
         this.name = name;
@@ -51,7 +52,7 @@ public class Backlog {
 
     public void checkOwner(Long userId) {
         if (!this.ownedBy.equals(userId)) {
-            throw new SecurityException();
+            throw new BacklogOwnerMismatchException();
         }
     }
 
