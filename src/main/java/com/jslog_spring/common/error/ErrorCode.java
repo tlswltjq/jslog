@@ -14,8 +14,8 @@ public enum ErrorCode {
     MEMBER_NOT_FOUND("M001", "사용자를 찾을 수 없습니다", HttpStatus.NOT_FOUND),
 
     // Backlog
-    BACKLOG_OWNER_MISMATCH("B001", "이 백로그의 소유자가 아닙니다", HttpStatus.FORBIDDEN)
-    ;
+    BACKLOG_NOT_FOUND("B001", "백로그를 찾을 수 없습니다", HttpStatus.NOT_FOUND),
+    BACKLOG_OWNER_MISMATCH("B002", "이 백로그의 소유자가 아닙니다", HttpStatus.FORBIDDEN);
 
     private final String code;
     private final String message;
