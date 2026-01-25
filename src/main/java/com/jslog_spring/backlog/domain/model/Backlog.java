@@ -63,4 +63,18 @@ public class Backlog {
     public void undone() {
         this.isDone = false;
     }
+
+    public void update(String name, String desc, LocalDateTime dueDate) {
+        if (name != null && !name.isBlank()) {
+            this.name = name;
+        }
+        if (desc != null) {
+            this.desc = desc;
+        }
+        if (dueDate != null) {
+            this.dueDate = dueDate;
+        }
+
+        this.updatedAt = LocalDateTime.now();
+    }
 }

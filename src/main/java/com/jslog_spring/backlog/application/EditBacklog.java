@@ -1,0 +1,24 @@
+package com.jslog_spring.backlog.application;
+
+import com.jslog_spring.backlog.domain.model.Backlog;
+import com.jslog_spring.backlog.domain.repository.BacklogRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+
+@Service
+@Transactional
+@RequiredArgsConstructor
+public class EditBacklog {
+    private final BacklogRepository repository;
+
+    public void invoke(Long requestUserId, Long backlogId, String newName, String newDesc, LocalDateTime newDueDate) {
+        Backlog backlog = repository.findById(backlogId);
+
+        backlog.checkOwner(requestUserId);
+
+        backlog.update(newName, newDesc, newDueDate);
+    }
+}
