@@ -7,13 +7,5 @@ public interface BacklogRepository {
 
     Backlog findById(Long id);
 
-    Backlog done(Long id);
-
-    Backlog unDone(Long id);
-
-    Backlog updateName(Long id, String name);
-
-    Backlog updateDesc(Long id, String description);
-
     void delete(Long id);
 }
