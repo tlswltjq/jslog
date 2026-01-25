@@ -27,7 +27,7 @@ public class Backlog {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private Backlog(Long id, Long ownedBy, String name, String desc, LocalDateTime dueDate, Boolean isDone,
                     LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
