@@ -6,20 +6,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class EditBacklog {
+public class DeleteBacklog {
     private final BacklogRepository repository;
 
-    public Long invoke(Long requestUserId, Long backlogId, String newName, String newDesc, LocalDateTime newDueDate) {
+    public void invoke(Long requestUserId, Long backlogId){
         Backlog backlog = repository.findById(backlogId);
 
         backlog.checkOwner(requestUserId);
 
-        backlog.update(newName, newDesc, newDueDate);
-        return backlog.getId();
+        repository.delete(backlogId);
     }
 }
