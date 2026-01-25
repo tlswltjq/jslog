@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 @Slf4j
-@RestControllerAdvice(basePackages = "com.fivelogic_recreate")
+@RestControllerAdvice(basePackages = "com.jslog_spring")
 public class GlobalResponseAdvice implements ResponseBodyAdvice<ApiResponse<?>> {
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
