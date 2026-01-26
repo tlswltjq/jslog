@@ -1,20 +1,21 @@
 package com.jslog_spring.backlog.domain.model;
 
 import com.jslog_spring.backlog.exception.BacklogOwnerMismatchException;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
 public class Backlog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +25,10 @@ public class Backlog {
     private String desc;
     private LocalDateTime dueDate;
     private Boolean isDone;
+    @CreatedDate
+    @Column(updatable = false)
     private LocalDateTime createdAt;
+    @LastModifiedDate
     private LocalDateTime updatedAt;
 
     @Builder(access = AccessLevel.PRIVATE)
@@ -47,8 +51,6 @@ public class Backlog {
                 .desc(desc)
                 .dueDate(dueDate)
                 .isDone(false)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
                 .build();
     }
 
@@ -76,7 +78,5 @@ public class Backlog {
         if (dueDate != null) {
             this.dueDate = dueDate;
         }
-
-        this.updatedAt = LocalDateTime.now();
     }
 }
