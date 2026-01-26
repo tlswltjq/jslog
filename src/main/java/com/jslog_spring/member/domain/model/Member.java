@@ -20,14 +20,16 @@ public class Member {
     private Long id;
     private String nickname;
     private MemberType type;
+    private String bio;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     @Builder(access = AccessLevel.PRIVATE)
-    private Member(Long id, String nickname, MemberType type, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    private Member(Long id, String nickname, MemberType type, String bio, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.nickname = nickname;
         this.type = type;
+        this.bio = bio;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -36,8 +38,17 @@ public class Member {
         return Member.builder()
                 .nickname(nickname)
                 .type(type)
+                .bio("")
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
+    }
+
+    public void changeNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void changeBio(String bio) {
+        this.bio = bio;
     }
 }
