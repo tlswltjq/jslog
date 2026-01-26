@@ -13,7 +13,7 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class Join {
+public class SignUp {
     private final List<MemberPolicy> memberPolicies;
     private final MemberRepository repository;
 
