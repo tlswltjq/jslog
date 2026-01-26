@@ -15,9 +15,26 @@ public interface MemberJpaRepository extends JpaRepository<Member, Long> {
 
     boolean existsByNickname(String nickname);
 
-    @Query("SELECT new MemberInfo(m.nickname, m.type, m.bio, m.createdAt) FROM Member m WHERE m.id = :id")
+    @Query("""
+            SELECT new com.jslog_spring.member.application.dto.MemberInfo(
+                m.nickname,
+                m.type,
+                m.bio,
+                m.createdAt
+            )
+            FROM Member m
+            WHERE m.id = :id
+            """)
     Optional<MemberInfo> findMemberInfoById(@Param("id") Long id);
 
-    @Query("SELECT new MemberInfo(m.nickname, m.type, m.bio, m.createdAt) FROM Member m")
+    @Query("""
+            SELECT new com.jslog_spring.member.application.dto.MemberInfo(
+                m.nickname,
+                m.type,
+                m.bio,
+                m.createdAt
+            )
+            FROM Member m
+            """)
     List<MemberInfo> findAllMemberInfos();
 }
