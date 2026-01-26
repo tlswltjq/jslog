@@ -34,13 +34,11 @@ public class Member {
     private LocalDateTime updatedAt;
 
     @Builder(access = AccessLevel.PRIVATE)
-    private Member(Long id, String nickname, MemberType type, String bio, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    private Member(Long id, String nickname, MemberType type, String bio) {
         this.id = id;
         this.nickname = nickname;
         this.type = type;
         this.bio = bio;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 
     public static Member of(String nickname, MemberType type) {

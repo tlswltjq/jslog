@@ -32,16 +32,13 @@ public class Backlog {
     private LocalDateTime updatedAt;
 
     @Builder(access = AccessLevel.PRIVATE)
-    private Backlog(Long id, Long ownedBy, String name, String desc, LocalDateTime dueDate, Boolean isDone,
-                    LocalDateTime createdAt, LocalDateTime updatedAt) {
+    private Backlog(Long id, Long ownedBy, String name, String desc, LocalDateTime dueDate, Boolean isDone) {
         this.id = id;
         this.ownedBy = ownedBy;
         this.name = name;
         this.desc = desc;
         this.dueDate = dueDate;
         this.isDone = isDone;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 
     public static Backlog of(Long userId, String name, String desc, LocalDateTime dueDate) {
