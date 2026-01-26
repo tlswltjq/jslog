@@ -17,9 +17,10 @@ public class SignUp {
     private final List<MemberPolicy> memberPolicies;
     private final MemberRepository repository;
 
-    public void invoke(String nickname) {
+    public Long invoke(String nickname) {
         Member member = Member.of(nickname, MemberType.USER);
         memberPolicies.forEach(policy -> policy.validate(member));
-        repository.save(member);
+        Member savedMember = repository.save(member);
+        return savedMember.getId();
     }
 }

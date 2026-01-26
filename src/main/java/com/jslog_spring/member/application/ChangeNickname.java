@@ -16,10 +16,11 @@ public class ChangeNickname {
     private final List<MemberPolicy> memberPolicies;
     private final MemberRepository repository;
 
-    public void invoke(Long memberId, String nickname) {
+    public Long invoke(Long memberId, String nickname) {
         Member member = repository.findById(memberId);
         member.changeNickname(nickname);
 
         memberPolicies.forEach(policy -> policy.validate(member));
+        return memberId;
     }
 }

@@ -12,11 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class DeleteBacklog {
     private final BacklogRepository repository;
 
-    public void invoke(Long requestUserId, Long backlogId){
+    public Long invoke(Long requestUserId, Long backlogId) {
         Backlog backlog = repository.findById(backlogId);
 
         backlog.checkOwner(requestUserId);
 
         repository.delete(backlogId);
+        return backlogId;
     }
 }

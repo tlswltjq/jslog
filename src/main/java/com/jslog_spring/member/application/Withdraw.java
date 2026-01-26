@@ -11,7 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class Withdraw {
     private final MemberRepository repository;
 
-    public void invoke(Long memberId) {
+    public Long invoke(Long memberId) {
         repository.delete(memberId);
+        return memberId;
     }
 }
