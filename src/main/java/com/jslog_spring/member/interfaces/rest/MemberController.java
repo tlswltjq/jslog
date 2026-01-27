@@ -3,6 +3,7 @@ package com.jslog_spring.member.interfaces.rest;
 import com.jslog_spring.auth.domain.model.AuthUserDetails;
 import com.jslog_spring.common.rest.ApiResponse;
 import com.jslog_spring.member.application.*;
+import com.jslog_spring.member.application.dto.SignUpResult;
 import com.jslog_spring.member.interfaces.rest.dto.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,9 +26,8 @@ public class MemberController {
 
     @PostMapping
     public ApiResponse<SignUpResponse> signUp(@RequestBody @Valid SignUpRequest request) {
-        Long memberId = signUp.invoke(request.getNickname(), request.getEmail(), request.getPassword());
-        return ApiResponse.success(HttpStatus.CREATED.value(), "회원가입 성공",
-                SignUpResponse.of(memberId, request.getNickname()));
+        SignUpResult signUpResult = signUp.invoke(request.getNickname(), request.getEmail(), request.getPassword());
+        return ApiResponse.success(HttpStatus.CREATED.value(), "회원가입 성공", SignUpResponse.from(signUpResult));
     }
 
     @DeleteMapping
