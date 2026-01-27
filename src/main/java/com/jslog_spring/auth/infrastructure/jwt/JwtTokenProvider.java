@@ -16,13 +16,17 @@ import java.util.Date;
 public class JwtTokenProvider {
     private final SecretKey key;
     private final long expirationTime;
+    private final long refreshTokenExpirationTime;
 
     public JwtTokenProvider(
             @Value("${jwt.secret:defaultSecretKeyMustBeLongEnoughToSatisfyRequirements256BitsOrMore}") String secretKey,
-            @Value("${jwt.expiration-time:3600000}") long expirationTime) {
+            @Value("${jwt.expiration-time:3600000}") long expirationTime,
+            @Value("${jwt.refresh-token-expiration-time:1209600000}") long refreshTokenExpirationTime
+    ) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
         this.expirationTime = expirationTime;
+        this.refreshTokenExpirationTime = refreshTokenExpirationTime;
     }
 
     public String createToken(Long accountId, String role) {
@@ -32,6 +36,18 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .subject(String.valueOf(accountId))
                 .claim("role", role)
+                .issuedAt(now)
+                .expiration(validity)
+                .signWith(key)
+                .compact();
+    }
+
+    public String createRefreshToken(Long accountId) {
+        Date now = new Date();
+        Date validity = new Date(now.getTime() + refreshTokenExpirationTime);
+
+        return Jwts.builder()
+                .subject(String.valueOf(accountId))
                 .issuedAt(now)
                 .expiration(validity)
                 .signWith(key)
