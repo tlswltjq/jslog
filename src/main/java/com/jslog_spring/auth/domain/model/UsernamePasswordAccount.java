@@ -7,7 +7,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
 @Getter
@@ -27,16 +26,16 @@ public class UsernamePasswordAccount extends Account {
         this.password = password;
     }
 
-    public static UsernamePasswordAccount of(Long memberId, String username, String password, PasswordEncoder passwordEncoder) {
+    public static UsernamePasswordAccount of(Long memberId, String username, String encryptedPassword) {
         return UsernamePasswordAccount.builder()
                 .memberId(memberId)
                 .username(username)
-                .password(passwordEncoder.encode(password))
+                .password(encryptedPassword)
                 .authProvider(AuthProvider.EMAIL)
                 .build();
     }
 
-    public boolean passwordMatches(String rawPassword, PasswordEncoder passwordEncoder) {
-        return passwordEncoder.matches(rawPassword, this.password);
+    public void changePassword(String encryptedNewPassword) {
+        this.password = encryptedNewPassword;
     }
 }

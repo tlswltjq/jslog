@@ -9,7 +9,7 @@ import com.jslog_spring.auth.domain.repository.RefreshTokenRepository;
 import com.jslog_spring.auth.domain.repository.UsernamePasswordAccountRepository;
 import com.jslog_spring.auth.infrastructure.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import com.jslog_spring.auth.domain.service.AccountManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +19,7 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class AuthService {
     private final UsernamePasswordAccountRepository usernamePasswordAccountRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final AccountManager accountManager;
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
 
@@ -28,7 +28,7 @@ public class AuthService {
         UsernamePasswordAccount account = usernamePasswordAccountRepository.findByUsername(request.email())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
 
-        if (!account.passwordMatches(request.password(), passwordEncoder)) {
+        if (!accountManager.checkPassword(account, request.password())) {
             throw new IllegalArgumentException("Invalid email or password");
         }
 
