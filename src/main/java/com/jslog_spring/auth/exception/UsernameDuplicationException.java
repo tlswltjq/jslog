@@ -1,4 +1,4 @@
-package com.jslog_spring.member.exception;
+package com.jslog_spring.auth.exception;
 
 import com.jslog_spring.common.error.BusinessException;
 import com.jslog_spring.common.error.ErrorCode;
