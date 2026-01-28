@@ -16,13 +16,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class UsernameDuplicationPolicyTest {
+class UsernameRuleTest {
 
     @Mock
     private UsernamePasswordAccountRepository accountRepository;
 
     @InjectMocks
-    private UsernameDuplicationPolicy usernameDuplicationPolicy;
+    private UsernameRule usernameRule;
 
     @Test
     @DisplayName("유저네임(이메일) 중복 검증 - 중복없음")
@@ -30,7 +30,7 @@ class UsernameDuplicationPolicyTest {
         UsernamePasswordAccount account = UsernamePasswordAccount.of(1L, "unique", "pwd");
         when(accountRepository.existsByUsername(anyString())).thenReturn(false);
 
-        usernameDuplicationPolicy.validate(account);
+        usernameRule.validate(account);
 
         verify(accountRepository).existsByUsername("unique");
     }
@@ -41,7 +41,7 @@ class UsernameDuplicationPolicyTest {
         UsernamePasswordAccount account = UsernamePasswordAccount.of(1L, "dup", "pwd");
         when(accountRepository.existsByUsername("dup")).thenReturn(true);
 
-        assertThatThrownBy(() -> usernameDuplicationPolicy.validate(account))
+        assertThatThrownBy(() -> usernameRule.validate(account))
                 .isInstanceOf(UsernameDuplicationException.class);
     }
 }

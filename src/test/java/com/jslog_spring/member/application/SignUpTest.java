@@ -2,7 +2,7 @@ package com.jslog_spring.member.application;
 
 import com.jslog_spring.auth.domain.model.AuthProvider;
 import com.jslog_spring.auth.domain.model.UsernamePasswordAccount;
-import com.jslog_spring.auth.domain.policy.AccountPolicy;
+import com.jslog_spring.auth.domain.policy.AccountCreationPolicy;
 import com.jslog_spring.auth.domain.repository.UsernamePasswordAccountRepository;
 import com.jslog_spring.auth.domain.service.AccountManager;
 import com.jslog_spring.member.application.dto.SignUpResult;
@@ -20,7 +20,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -37,7 +36,7 @@ class SignUpTest {
     @Mock
     private SignUpPolicy memberPolicy;
     @Mock
-    private AccountPolicy<UsernamePasswordAccount> accountPolicy;
+    private AccountCreationPolicy accountPolicy;
 
     private SignUp signUp;
 
@@ -59,8 +58,6 @@ class SignUpTest {
         String email = "test@example.com";
         String password = "password";
 
-        Member member = Member.of(nickname, com.jslog_spring.member.domain.model.MemberType.USER); // Just for mocking
-                                                                                                   // return
         // We can't easily mock the exact instance created inside invoke, so we match
         // any.
 
@@ -82,13 +79,14 @@ class SignUpTest {
                 .authProvider(AuthProvider.EMAIL)
                 .build();
         when(accountManager.createUsernamePasswordAccount(any(), anyString(), anyString())).thenReturn(account);
+        when(accountPolicy.supports(any())).thenReturn(true);
 
         // when
         SignUpResult result = signUp.invoke(nickname, email, password);
 
         // then
         verify(memberPolicy).validate(any(Member.class));
-        verify(accountPolicy).validate(any(UsernamePasswordAccount.class));
+        verify(accountPolicy).validate(any());
         verify(memberRepository).save(any(Member.class));
         verify(accountRepository).save(any(UsernamePasswordAccount.class));
 
