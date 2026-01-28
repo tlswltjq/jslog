@@ -3,15 +3,24 @@ on:
   pull_request:
     types:
       - closed
+
+permissions:
+  issues: write       # 이슈 닫기/댓글 작성 가능
+  pull-requests: read # PR 읽기 가능
+
 jobs:
   close-issue:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
-    permissions:
-      issues: write
-      pull-requests: read
     steps:
-      - name: Close issue
+      - name: Extract issue number
+        id: extract
+        run: |
+          echo "issue=$(echo '${{ github.event.pull_request.body }}' | grep -oE '#[0-9]+' | tr -d '#')" >> $GITHUB_OUTPUT
+
+      - name: Close linked issue
         uses: peter-evans/close-issue@v3
         with:
-          close-message: Closed by pull request
+          issue-number: ${{ steps.extract.outputs.issue }}
+          comment: "Closed by pull request #${{ github.event.pull_request.number }}"
+          close-reason: completed
