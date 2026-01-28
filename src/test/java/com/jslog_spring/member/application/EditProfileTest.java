@@ -1,8 +1,9 @@
 package com.jslog_spring.member.application;
 
+import com.jslog_spring.member.application.dto.ProfileEditCommand;
 import com.jslog_spring.member.domain.model.Member;
 import com.jslog_spring.member.domain.model.MemberType;
-import com.jslog_spring.member.domain.policy.MemberPolicy;
+import com.jslog_spring.member.domain.policy.ProfileEditPolicy;
 import com.jslog_spring.member.domain.repository.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,9 +12,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -23,13 +24,13 @@ class EditProfileTest {
     @Mock
     private MemberRepository memberRepository;
     @Mock
-    private MemberPolicy memberPolicy;
+    private ProfileEditPolicy profileEditPolicy;
 
     private EditProfile editProfile;
 
     @BeforeEach
     void setUp() {
-        editProfile = new EditProfile(List.of(memberPolicy), memberRepository);
+        editProfile = new EditProfile(java.util.List.of(profileEditPolicy), memberRepository);
     }
 
     @Test
@@ -48,6 +49,6 @@ class EditProfileTest {
         // then
         assertThat(resultId).isEqualTo(memberId);
         assertThat(member.getBio()).isEqualTo(newBio);
-        verify(memberPolicy).validate(member);
+        verify(profileEditPolicy).validate(eq(member), any(ProfileEditCommand.class));
     }
 }

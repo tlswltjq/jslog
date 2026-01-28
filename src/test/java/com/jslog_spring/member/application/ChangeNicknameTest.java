@@ -2,7 +2,7 @@ package com.jslog_spring.member.application;
 
 import com.jslog_spring.member.domain.model.Member;
 import com.jslog_spring.member.domain.model.MemberType;
-import com.jslog_spring.member.domain.policy.MemberPolicy;
+import com.jslog_spring.member.domain.policy.NicknameChangePolicy;
 import com.jslog_spring.member.domain.repository.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,10 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -24,13 +21,13 @@ class ChangeNicknameTest {
     @Mock
     private MemberRepository memberRepository;
     @Mock
-    private MemberPolicy memberPolicy;
+    private NicknameChangePolicy nicknameChangePolicy;
 
     private ChangeNickname changeNickname;
 
     @BeforeEach
     void setUp() {
-        changeNickname = new ChangeNickname(List.of(memberPolicy), memberRepository);
+        changeNickname = new ChangeNickname(java.util.List.of(nicknameChangePolicy), memberRepository);
     }
 
     @Test
@@ -49,6 +46,6 @@ class ChangeNicknameTest {
         // then
         assertThat(resultId).isEqualTo(memberId);
         assertThat(member.getNickname()).isEqualTo(newNickname);
-        verify(memberPolicy).validate(member);
+        verify(nicknameChangePolicy).validate(newNickname);
     }
 }

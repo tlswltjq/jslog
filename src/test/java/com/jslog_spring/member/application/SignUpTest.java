@@ -7,7 +7,7 @@ import com.jslog_spring.auth.domain.repository.UsernamePasswordAccountRepository
 import com.jslog_spring.auth.domain.service.AccountManager;
 import com.jslog_spring.member.application.dto.SignUpResult;
 import com.jslog_spring.member.domain.model.Member;
-import com.jslog_spring.member.domain.policy.MemberPolicy;
+import com.jslog_spring.member.domain.policy.SignUpPolicy;
 import com.jslog_spring.member.domain.repository.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -35,7 +35,7 @@ class SignUpTest {
     @Mock
     private AccountManager accountManager;
     @Mock
-    private MemberPolicy memberPolicy;
+    private SignUpPolicy memberPolicy;
     @Mock
     private AccountPolicy<UsernamePasswordAccount> accountPolicy;
 
