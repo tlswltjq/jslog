@@ -8,6 +8,7 @@ import com.jslog_spring.member.domain.model.Member;
 import com.jslog_spring.member.domain.model.MemberType;
 import com.jslog_spring.member.domain.policy.MemberPolicy;
 import com.jslog_spring.member.domain.repository.MemberRepository;
+import com.jslog_spring.member.exception.UsernameDuplicationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +26,7 @@ public class SignUp {
 
     public SignUpResult invoke(String nickname, String email, String password) {
         if (accountRepository.existsByUsername(email)) {
-            throw new IllegalArgumentException("Email already exists");
+            throw new UsernameDuplicationException();
         }
 
         Member member = Member.of(nickname, MemberType.USER);

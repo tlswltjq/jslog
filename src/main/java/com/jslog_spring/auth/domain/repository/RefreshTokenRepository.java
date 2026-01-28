@@ -1,16 +1,13 @@
 package com.jslog_spring.auth.domain.repository;
 
 import com.jslog_spring.auth.domain.model.RefreshToken;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+public interface RefreshTokenRepository {
+    RefreshToken save(RefreshToken refreshToken);
 
-@Repository
-public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
-    Optional<RefreshToken> findByToken(String token);
+    RefreshToken findByToken(String token);
 
-    Optional<RefreshToken> findByAccountId(Long accountId);
+    RefreshToken findByAccountId(Long accountId);
 
     void deleteByToken(String token);
 }

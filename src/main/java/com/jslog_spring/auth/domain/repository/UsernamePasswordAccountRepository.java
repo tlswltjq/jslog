@@ -1,14 +1,11 @@
 package com.jslog_spring.auth.domain.repository;
 
 import com.jslog_spring.auth.domain.model.UsernamePasswordAccount;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+public interface UsernamePasswordAccountRepository {
+    UsernamePasswordAccount save(UsernamePasswordAccount account);
 
-@Repository
-public interface UsernamePasswordAccountRepository extends JpaRepository<UsernamePasswordAccount, Long> {
-    Optional<UsernamePasswordAccount> findByUsername(String username);
+    UsernamePasswordAccount findByUsername(String username);
 
     boolean existsByUsername(String username);
 }

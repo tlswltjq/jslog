@@ -25,8 +25,7 @@ public class AuthService {
 
     @Transactional
     public TokenResponse login(LoginRequest request) {
-        UsernamePasswordAccount account = usernamePasswordAccountRepository.findByUsername(request.email())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
+        UsernamePasswordAccount account = usernamePasswordAccountRepository.findByUsername(request.email());
 
         if (!accountManager.checkPassword(account, request.password())) {
             throw new IllegalArgumentException("Invalid email or password");
@@ -59,9 +58,7 @@ public class AuthService {
         }
 
         String requestRefreshToken = request.refreshToken();
-        RefreshToken foundToken = refreshTokenRepository
-                .findByToken(requestRefreshToken)
-                .orElseThrow(() -> new IllegalArgumentException("Refresh token not found"));
+        RefreshToken foundToken = refreshTokenRepository.findByToken(requestRefreshToken);
 
         Long accountId = foundToken.getAccountId();
         String role = foundToken.getRole();
