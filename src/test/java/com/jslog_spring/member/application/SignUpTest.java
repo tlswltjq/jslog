@@ -3,7 +3,6 @@ package com.jslog_spring.member.application;
 import com.jslog_spring.auth.domain.model.AuthProvider;
 import com.jslog_spring.auth.domain.model.UsernamePasswordAccount;
 import com.jslog_spring.auth.domain.policy.AccountCreationPolicy;
-import com.jslog_spring.auth.domain.repository.UsernamePasswordAccountRepository;
 import com.jslog_spring.auth.domain.service.AccountManager;
 import com.jslog_spring.member.application.dto.SignUpResult;
 import com.jslog_spring.member.domain.model.Member;
@@ -30,8 +29,6 @@ class SignUpTest {
     @Mock
     private MemberRepository memberRepository;
     @Mock
-    private UsernamePasswordAccountRepository accountRepository;
-    @Mock
     private AccountManager accountManager;
     @Mock
     private SignUpPolicy memberPolicy;
@@ -46,7 +43,6 @@ class SignUpTest {
                 List.of(memberPolicy),
                 List.of(accountPolicy),
                 memberRepository,
-                accountRepository,
                 accountManager);
     }
 
@@ -88,7 +84,7 @@ class SignUpTest {
         verify(memberPolicy).validate(any(Member.class));
         verify(accountPolicy).validate(any());
         verify(memberRepository).save(any(Member.class));
-        verify(accountRepository).save(any(UsernamePasswordAccount.class));
+        verify(accountManager).saveAccount(any(UsernamePasswordAccount.class));
 
         assertThat(result.nickname()).isEqualTo(nickname);
         assertThat(result.username()).isEqualTo(email);

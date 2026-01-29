@@ -1,7 +1,9 @@
 package com.jslog_spring.auth.domain.service;
 
+import com.jslog_spring.auth.domain.model.Account;
 import com.jslog_spring.auth.domain.model.AuthProvider;
 import com.jslog_spring.auth.domain.model.UsernamePasswordAccount;
+import com.jslog_spring.auth.domain.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AccountManager {
     private final PasswordEncoder passwordEncoder;
+    private final AccountRepository accountRepository;
 
     public UsernamePasswordAccount createUsernamePasswordAccount(Long memberId, String email, String password) {
         return UsernamePasswordAccount.builder()
@@ -18,6 +21,10 @@ public class AccountManager {
                 .password(passwordEncoder.encode(password))
                 .authProvider(AuthProvider.EMAIL)
                 .build();
+    }
+
+    public Account saveAccount(Account account) {
+        return accountRepository.save(account);
     }
 
     public void changePassword(UsernamePasswordAccount account, String newPassword) {

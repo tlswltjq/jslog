@@ -1,8 +1,8 @@
 package com.jslog_spring.member.application;
 
+import com.jslog_spring.auth.domain.model.Account;
 import com.jslog_spring.auth.domain.model.UsernamePasswordAccount;
 import com.jslog_spring.auth.domain.policy.AccountCreationPolicy;
-import com.jslog_spring.auth.domain.repository.UsernamePasswordAccountRepository;
 import com.jslog_spring.auth.domain.service.AccountManager;
 import com.jslog_spring.member.application.dto.SignUpResult;
 import com.jslog_spring.member.domain.model.Member;
@@ -22,7 +22,6 @@ public class SignUp {
     private final List<SignUpPolicy> memberPolicies;
     private final List<AccountCreationPolicy> accountPolicies;
     private final MemberRepository memberRepository;
-    private final UsernamePasswordAccountRepository accountRepository;
     private final AccountManager accountManager;
 
     public SignUpResult invoke(String nickname, String email, String password) {
@@ -37,7 +36,7 @@ public class SignUp {
         accountPolicies.stream()
                 .filter(policy -> policy.supports(account))
                 .forEach(policy -> policy.validate(account));
-        accountRepository.save(account);
+        accountManager.saveAccount(account);
 
         return new SignUpResult(member.getId(), account.getUsername(), member.getNickname());
     }
