@@ -1,6 +1,5 @@
 package com.jslog_spring.member.application;
 
-import com.jslog_spring.auth.domain.model.Account;
 import com.jslog_spring.auth.domain.model.UsernamePasswordAccount;
 import com.jslog_spring.auth.domain.policy.AccountCreationPolicy;
 import com.jslog_spring.auth.domain.service.AccountManager;
