@@ -20,7 +20,7 @@ public class EditProfile {
     public Long invoke(Long memberId, String bio) {
         Member member = repository.findById(memberId);
 
-        ProfileEditCommand command = new ProfileEditCommand(member.getNickname(), bio);
+        ProfileEditCommand command = new ProfileEditCommand(bio);
 
         policies.forEach(policy -> policy.validate(member, command));
 

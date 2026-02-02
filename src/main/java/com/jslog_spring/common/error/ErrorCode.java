@@ -14,6 +14,7 @@ public enum ErrorCode {
     MEMBER_NOT_FOUND("M001", "사용자를 찾을 수 없습니다", HttpStatus.NOT_FOUND),
     NICKNAME_DUPLICATION("M002", "이미 존재하는 닉네임입니다", HttpStatus.BAD_REQUEST),
     USERNAME_DUPLICATION("M003", "이미 존재하는 이메일입니다", HttpStatus.BAD_REQUEST),
+    BIO_LENGTH_EXCEEDED("M004", "자기소개는 200자를 초과할 수 없습니다", HttpStatus.BAD_REQUEST),
 
     // Backlog
     BACKLOG_NOT_FOUND("B001", "백로그를 찾을 수 없습니다", HttpStatus.NOT_FOUND),

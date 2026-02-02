@@ -1,6 +1,5 @@
 package com.jslog_spring.member.domain.policy;
 
-import com.jslog_spring.member.application.dto.ProfileEditCommand;
 import com.jslog_spring.member.domain.model.Member;
 import com.jslog_spring.member.domain.repository.MemberRepository;
 import com.jslog_spring.member.exception.NicknameDuplicationException;
@@ -51,56 +50,25 @@ class NicknameRuleTest {
     }
 
     @Test
-    @DisplayName("프로필 수정 시 닉네임 변경 없음")
-    void validate_update_no_change() {
+    @DisplayName("닉네임 변경 시 중복 발생")
+    void validate_nicknameChange_duplication() {
         // given
-        Member member = mock(Member.class);
-        String currentNickname = "old";
-        when(member.getNickname()).thenReturn(currentNickname);
-        ProfileEditCommand command = new ProfileEditCommand(currentNickname, null);
-
-        // when
-        nicknameRule.validate(member, command);
-
-        // then
-        // 닉네임 중복 체크가 호출되지 않아야 함
-        verify(memberRepository, never()).existsByNickname(any());
-    }
-
-    @Test
-    @DisplayName("프로필 수정 시 닉네임 변경 및 중복 발생")
-    void validate_update_change_duplication() {
-        // given
-        Member member = mock(Member.class);
-        String oldNickname = "old";
-        String newNickname = "duplicate";
-
-        when(member.getNickname()).thenReturn(oldNickname);
-
-        ProfileEditCommand command = new ProfileEditCommand(newNickname, null);
-
-        when(memberRepository.existsByNickname(newNickname)).thenReturn(true);
+        String nickname = "duplicate";
+        when(memberRepository.existsByNickname(nickname)).thenReturn(true);
 
         // when & then
-        assertThatThrownBy(() -> nicknameRule.validate(member, command))
+        assertThatThrownBy(() -> nicknameRule.validate(nickname))
                 .isInstanceOf(NicknameDuplicationException.class);
     }
 
     @Test
-    @DisplayName("프로필 수정 시 닉네임 변경 및 중복 없음")
-    void validate_update_change_success() {
+    @DisplayName("닉네임 변경 시 중복 없음")
+    void validate_nicknameChange_success() {
         // given
-        Member member = mock(Member.class);
-        String oldNickname = "old";
-        String newNickname = "unique";
-
-        when(member.getNickname()).thenReturn(oldNickname);
-
-        ProfileEditCommand command = new ProfileEditCommand(newNickname, null);
-
-        when(memberRepository.existsByNickname(newNickname)).thenReturn(false);
+        String nickname = "unique";
+        when(memberRepository.existsByNickname(nickname)).thenReturn(false);
 
         // when & then
-        nicknameRule.validate(member, command); // Should not throw
+        nicknameRule.validate(nickname); // Should not throw
     }
 }
