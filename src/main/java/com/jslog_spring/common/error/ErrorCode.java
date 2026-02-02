@@ -15,6 +15,7 @@ public enum ErrorCode {
     NICKNAME_DUPLICATION("M002", "이미 존재하는 닉네임입니다", HttpStatus.BAD_REQUEST),
     USERNAME_DUPLICATION("M003", "이미 존재하는 이메일입니다", HttpStatus.BAD_REQUEST),
     BIO_LENGTH_EXCEEDED("M004", "자기소개는 200자를 초과할 수 없습니다", HttpStatus.BAD_REQUEST),
+    FORBIDDEN_WORD_USED("M005", "사용할 수 없는 단어가 포함되어 있습니다", HttpStatus.BAD_REQUEST),
 
     // Backlog
     BACKLOG_NOT_FOUND("B001", "백로그를 찾을 수 없습니다", HttpStatus.NOT_FOUND),
