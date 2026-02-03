@@ -1,7 +1,7 @@
 package com.jslog_spring.backlog.application;
 
 import com.jslog_spring.backlog.domain.model.Backlog;
-import com.jslog_spring.backlog.domain.repository.BacklogRepository;
+import com.jslog_spring.backlog.domain.repository.BacklogQueryRepository;
 import com.jslog_spring.backlog.exception.BacklogOwnerMismatchException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,7 +20,7 @@ import static org.mockito.Mockito.verify;
 class EditBacklogTest {
 
     @Mock
-    private BacklogRepository backlogRepository;
+    private BacklogQueryRepository backlogRepository;
 
     @InjectMocks
     private EditBacklog editBacklog;

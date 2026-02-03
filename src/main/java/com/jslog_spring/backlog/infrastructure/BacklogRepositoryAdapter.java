@@ -2,7 +2,8 @@ package com.jslog_spring.backlog.infrastructure;
 
 import com.jslog_spring.backlog.application.dto.BacklogInfo;
 import com.jslog_spring.backlog.domain.model.Backlog;
-import com.jslog_spring.backlog.domain.repository.BacklogRepository;
+import com.jslog_spring.backlog.domain.repository.BacklogCommandRepository;
+import com.jslog_spring.backlog.domain.repository.BacklogQueryRepository;
 import com.jslog_spring.backlog.exception.BacklogNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -11,7 +12,7 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class BacklogRepositoryAdapter implements BacklogRepository {
+public class BacklogRepositoryAdapter implements BacklogCommandRepository, BacklogQueryRepository {
     private final BacklogJpaRepository repository;
 
     @Override

@@ -5,9 +5,7 @@ import com.jslog_spring.member.domain.model.Member;
 
 import java.util.List;
 
-public interface MemberRepository {
-    Member save(Member member);
-
+public interface MemberQueryRepository {
     Member findById(Long id);
 
     MemberInfo findMemberInfoById(Long id);
@@ -15,6 +13,4 @@ public interface MemberRepository {
     List<MemberInfo> findAllMemberInfos();
 
     boolean existsByNickname(String nickname);
-
-    void delete(Long id);
 }

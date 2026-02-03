@@ -1,7 +1,8 @@
 package com.jslog_spring.backlog.application;
 
 import com.jslog_spring.backlog.domain.model.Backlog;
-import com.jslog_spring.backlog.domain.repository.BacklogRepository;
+import com.jslog_spring.backlog.domain.repository.BacklogCommandRepository;
+import com.jslog_spring.backlog.domain.repository.BacklogQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,14 +11,15 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @RequiredArgsConstructor
 public class DeleteBacklog {
-    private final BacklogRepository repository;
+    private final BacklogCommandRepository commandRepository;
+    private final BacklogQueryRepository queryRepository;
 
     public Long invoke(Long requestUserId, Long backlogId) {
-        Backlog backlog = repository.findById(backlogId);
+        Backlog backlog = queryRepository.findById(backlogId);
 
         backlog.checkOwner(requestUserId);
 
-        repository.delete(backlogId);
+        commandRepository.delete(backlogId);
         return backlogId;
     }
 }

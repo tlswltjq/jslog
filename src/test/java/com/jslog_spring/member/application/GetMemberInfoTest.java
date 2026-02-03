@@ -2,7 +2,7 @@ package com.jslog_spring.member.application;
 
 import com.jslog_spring.member.application.dto.MemberInfo;
 import com.jslog_spring.member.domain.model.MemberType;
-import com.jslog_spring.member.domain.repository.MemberRepository;
+import com.jslog_spring.member.domain.repository.MemberQueryRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,7 +19,7 @@ import static org.mockito.Mockito.when;
 class GetMemberInfoTest {
 
     @Mock
-    private MemberRepository memberRepository;
+    private MemberQueryRepository memberRepository;
 
     @InjectMocks
     private GetMemberInfo getMemberInfo;

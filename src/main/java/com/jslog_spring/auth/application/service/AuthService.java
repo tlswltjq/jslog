@@ -5,8 +5,9 @@ import com.jslog_spring.auth.application.dto.TokenReissueRequest;
 import com.jslog_spring.auth.application.dto.TokenResponse;
 import com.jslog_spring.auth.domain.model.RefreshToken;
 import com.jslog_spring.auth.domain.model.UsernamePasswordAccount;
-import com.jslog_spring.auth.domain.repository.RefreshTokenRepository;
-import com.jslog_spring.auth.domain.repository.UsernamePasswordAccountRepository;
+import com.jslog_spring.auth.domain.repository.RefreshTokenCommandRepository;
+import com.jslog_spring.auth.domain.repository.RefreshTokenQueryRepository;
+import com.jslog_spring.auth.domain.repository.UsernamePasswordAccountQueryRepository;
 import com.jslog_spring.auth.infrastructure.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import com.jslog_spring.auth.domain.service.AccountManager;
@@ -18,14 +19,15 @@ import java.util.Date;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
-    private final UsernamePasswordAccountRepository usernamePasswordAccountRepository;
+    private final UsernamePasswordAccountQueryRepository usernamePasswordAccountQueryRepository;
     private final AccountManager accountManager;
     private final JwtTokenProvider jwtTokenProvider;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final RefreshTokenCommandRepository refreshTokenCommandRepository;
+    private final RefreshTokenQueryRepository refreshTokenQueryRepository;
 
     @Transactional
     public TokenResponse login(LoginRequest request) {
-        UsernamePasswordAccount account = usernamePasswordAccountRepository.findByUsername(request.email());
+        UsernamePasswordAccount account = usernamePasswordAccountQueryRepository.findByUsername(request.email());
 
         if (!accountManager.checkPassword(account, request.password())) {
             throw new IllegalArgumentException("Invalid email or password");
@@ -41,14 +43,14 @@ public class AuthService {
 
         RefreshToken refreshTokenEntity = new RefreshToken(
                 refreshToken, accountId, expiryDate, role);
-        refreshTokenRepository.save(refreshTokenEntity);
+        refreshTokenCommandRepository.save(refreshTokenEntity);
 
         return new TokenResponse(accessToken, refreshToken);
     }
 
     @Transactional
     public void logout(TokenReissueRequest request) {
-        refreshTokenRepository.deleteByToken(request.refreshToken());
+        refreshTokenCommandRepository.deleteByToken(request.refreshToken());
     }
 
     @Transactional
@@ -58,7 +60,7 @@ public class AuthService {
         }
 
         String requestRefreshToken = request.refreshToken();
-        RefreshToken foundToken = refreshTokenRepository.findByToken(requestRefreshToken);
+        RefreshToken foundToken = refreshTokenQueryRepository.findByToken(requestRefreshToken);
 
         Long accountId = foundToken.getAccountId();
         String role = foundToken.getRole();

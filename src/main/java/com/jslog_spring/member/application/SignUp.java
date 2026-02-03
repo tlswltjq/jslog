@@ -7,7 +7,7 @@ import com.jslog_spring.member.application.dto.SignUpResult;
 import com.jslog_spring.member.domain.model.Member;
 import com.jslog_spring.member.domain.model.MemberType;
 import com.jslog_spring.member.domain.policy.SignUpPolicy;
-import com.jslog_spring.member.domain.repository.MemberRepository;
+import com.jslog_spring.member.domain.repository.MemberCommandRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +20,7 @@ import java.util.List;
 public class SignUp {
     private final List<SignUpPolicy> memberPolicies;
     private final List<AccountCreationPolicy> accountPolicies;
-    private final MemberRepository memberRepository;
+    private final MemberCommandRepository memberRepository;
     private final AccountManager accountManager;
 
     public SignUpResult invoke(String nickname, String email, String password) {

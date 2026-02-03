@@ -5,8 +5,9 @@ import com.jslog_spring.auth.application.dto.TokenReissueRequest;
 import com.jslog_spring.auth.application.dto.TokenResponse;
 import com.jslog_spring.auth.domain.model.RefreshToken;
 import com.jslog_spring.auth.domain.model.UsernamePasswordAccount;
-import com.jslog_spring.auth.domain.repository.RefreshTokenRepository;
-import com.jslog_spring.auth.domain.repository.UsernamePasswordAccountRepository;
+import com.jslog_spring.auth.domain.repository.RefreshTokenCommandRepository;
+import com.jslog_spring.auth.domain.repository.RefreshTokenQueryRepository;
+import com.jslog_spring.auth.domain.repository.UsernamePasswordAccountQueryRepository;
 import com.jslog_spring.auth.domain.service.AccountManager;
 import com.jslog_spring.auth.infrastructure.jwt.JwtTokenProvider;
 import io.jsonwebtoken.Claims;
@@ -29,13 +30,15 @@ import static org.mockito.Mockito.verify;
 class AuthServiceTest {
 
     @Mock
-    private UsernamePasswordAccountRepository usernamePasswordAccountRepository;
+    private UsernamePasswordAccountQueryRepository usernamePasswordAccountQueryRepository;
     @Mock
     private AccountManager accountManager;
     @Mock
     private JwtTokenProvider jwtTokenProvider;
     @Mock
-    private RefreshTokenRepository refreshTokenRepository;
+    private RefreshTokenCommandRepository refreshTokenCommandRepository;
+    @Mock
+    private RefreshTokenQueryRepository refreshTokenQueryRepository;
     @Mock
     private Claims claims;
 
@@ -49,7 +52,7 @@ class AuthServiceTest {
         LoginRequest request = new LoginRequest("email", "password");
         UsernamePasswordAccount account = UsernamePasswordAccount.of(1L, "email", "encoded");
 
-        given(usernamePasswordAccountRepository.findByUsername(request.email())).willReturn(account);
+        given(usernamePasswordAccountQueryRepository.findByUsername(request.email())).willReturn(account);
         given(accountManager.checkPassword(account, request.password())).willReturn(true);
         given(jwtTokenProvider.createToken(any(), anyString())).willReturn("access");
         given(jwtTokenProvider.createRefreshToken(any())).willReturn("refresh");
@@ -62,7 +65,7 @@ class AuthServiceTest {
         // then
         assertThat(response.accessToken()).isEqualTo("access");
         assertThat(response.refreshToken()).isEqualTo("refresh");
-        verify(refreshTokenRepository).save(any(RefreshToken.class));
+        verify(refreshTokenCommandRepository).save(any(RefreshToken.class));
     }
 
     @Test
@@ -73,7 +76,7 @@ class AuthServiceTest {
         RefreshToken existingTokenEntity = new RefreshToken("old_refresh", 1L, new Date(), "USER");
 
         given(jwtTokenProvider.validateToken("old_refresh")).willReturn(true);
-        given(refreshTokenRepository.findByToken("old_refresh")).willReturn(existingTokenEntity);
+        given(refreshTokenQueryRepository.findByToken("old_refresh")).willReturn(existingTokenEntity);
         given(jwtTokenProvider.createToken(1L, "USER")).willReturn("new_access");
         given(jwtTokenProvider.createRefreshToken(1L)).willReturn("new_refresh");
         given(jwtTokenProvider.getClaims("new_refresh")).willReturn(claims);
@@ -98,6 +101,6 @@ class AuthServiceTest {
         authService.logout(request);
 
         // then
-        verify(refreshTokenRepository).deleteByToken("refresh");
+        verify(refreshTokenCommandRepository).deleteByToken("refresh");
     }
 }

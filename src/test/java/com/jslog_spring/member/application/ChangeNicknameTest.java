@@ -3,7 +3,7 @@ package com.jslog_spring.member.application;
 import com.jslog_spring.member.domain.model.Member;
 import com.jslog_spring.member.domain.model.MemberType;
 import com.jslog_spring.member.domain.policy.NicknameChangePolicy;
-import com.jslog_spring.member.domain.repository.MemberRepository;
+import com.jslog_spring.member.domain.repository.MemberQueryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,7 @@ import static org.mockito.Mockito.when;
 class ChangeNicknameTest {
 
     @Mock
-    private MemberRepository memberRepository;
+    private MemberQueryRepository memberRepository;
     @Mock
     private NicknameChangePolicy nicknameChangePolicy;
 

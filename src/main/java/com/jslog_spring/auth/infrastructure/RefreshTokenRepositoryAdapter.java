@@ -1,7 +1,8 @@
 package com.jslog_spring.auth.infrastructure;
 
 import com.jslog_spring.auth.domain.model.RefreshToken;
-import com.jslog_spring.auth.domain.repository.RefreshTokenRepository;
+import com.jslog_spring.auth.domain.repository.RefreshTokenCommandRepository;
+import com.jslog_spring.auth.domain.repository.RefreshTokenQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -9,7 +10,7 @@ import com.jslog_spring.auth.exception.RefreshTokenNotFoundException;
 
 @Repository
 @RequiredArgsConstructor
-public class RefreshTokenRepositoryAdapter implements RefreshTokenRepository {
+public class RefreshTokenRepositoryAdapter implements RefreshTokenCommandRepository, RefreshTokenQueryRepository {
     private final RefreshTokenJpaRepository repository;
 
     @Override

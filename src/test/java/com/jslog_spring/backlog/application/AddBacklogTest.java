@@ -1,7 +1,7 @@
 package com.jslog_spring.backlog.application;
 
 import com.jslog_spring.backlog.domain.model.Backlog;
-import com.jslog_spring.backlog.domain.repository.BacklogRepository;
+import com.jslog_spring.backlog.domain.repository.BacklogCommandRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,7 +19,7 @@ import static org.mockito.Mockito.when;
 class AddBacklogTest {
 
     @Mock
-    private BacklogRepository backlogRepository;
+    private BacklogCommandRepository backlogRepository;
 
     @InjectMocks
     private AddBacklog addBacklog;

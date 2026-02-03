@@ -2,15 +2,21 @@ package com.jslog_spring.auth.infrastructure;
 
 import com.jslog_spring.auth.domain.model.Account;
 import com.jslog_spring.auth.domain.model.UsernamePasswordAccount;
-import com.jslog_spring.auth.domain.repository.AccountRepository;
-import com.jslog_spring.auth.domain.repository.UsernamePasswordAccountRepository;
+import com.jslog_spring.auth.domain.repository.AccountCommandRepository;
+import com.jslog_spring.auth.domain.repository.AccountQueryRepository;
+import com.jslog_spring.auth.domain.repository.UsernamePasswordAccountCommandRepository;
+import com.jslog_spring.auth.domain.repository.UsernamePasswordAccountQueryRepository;
 import com.jslog_spring.auth.exception.AccountNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class AccountRepositoryAdapter implements AccountRepository, UsernamePasswordAccountRepository {
+public class AccountRepositoryAdapter implements
+        AccountCommandRepository,
+        AccountQueryRepository,
+        UsernamePasswordAccountCommandRepository,
+        UsernamePasswordAccountQueryRepository {
     private final AccountJpaRepository accountJpaRepository;
     private final UsernamePasswordAccountJpaRepository usernamePasswordAccountJpaRepository;
 

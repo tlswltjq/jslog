@@ -2,7 +2,7 @@ package com.jslog_spring.auth.domain.policy;
 
 import com.jslog_spring.auth.domain.model.Account;
 import com.jslog_spring.auth.domain.model.UsernamePasswordAccount;
-import com.jslog_spring.auth.domain.repository.UsernamePasswordAccountRepository;
+import com.jslog_spring.auth.domain.repository.UsernamePasswordAccountQueryRepository;
 import com.jslog_spring.auth.exception.UsernameDuplicationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class UsernameRule implements AccountCreationPolicy {
-    private final UsernamePasswordAccountRepository accountRepository;
+    private final UsernamePasswordAccountQueryRepository accountRepository;
 
     @Override
     public boolean supports(Account account) {

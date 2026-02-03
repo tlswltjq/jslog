@@ -2,7 +2,8 @@ package com.jslog_spring.member.infrastructure;
 
 import com.jslog_spring.member.application.dto.MemberInfo;
 import com.jslog_spring.member.domain.model.Member;
-import com.jslog_spring.member.domain.repository.MemberRepository;
+import com.jslog_spring.member.domain.repository.MemberCommandRepository;
+import com.jslog_spring.member.domain.repository.MemberQueryRepository;
 import com.jslog_spring.member.exception.MemberNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -11,7 +12,7 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class MemberRepositoryAdapter implements MemberRepository {
+public class MemberRepositoryAdapter implements MemberCommandRepository, MemberQueryRepository {
     private final MemberJpaRepository repository;
 
     @Override

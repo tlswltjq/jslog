@@ -1,7 +1,7 @@
 package com.jslog_spring.member.domain.policy;
 
 import com.jslog_spring.member.domain.model.Member;
-import com.jslog_spring.member.domain.repository.MemberRepository;
+import com.jslog_spring.member.domain.repository.MemberQueryRepository;
 import com.jslog_spring.member.exception.NicknameDuplicationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class NicknameRule implements SignUpPolicy, NicknameChangePolicy {
-    private final MemberRepository memberRepository;
+    private final MemberQueryRepository memberRepository;
 
     @Override
     public void validate(Member member) {

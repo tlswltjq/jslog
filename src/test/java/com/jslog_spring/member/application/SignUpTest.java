@@ -7,7 +7,7 @@ import com.jslog_spring.auth.domain.service.AccountManager;
 import com.jslog_spring.member.application.dto.SignUpResult;
 import com.jslog_spring.member.domain.model.Member;
 import com.jslog_spring.member.domain.policy.SignUpPolicy;
-import com.jslog_spring.member.domain.repository.MemberRepository;
+import com.jslog_spring.member.domain.repository.MemberCommandRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
 class SignUpTest {
 
     @Mock
-    private MemberRepository memberRepository;
+    private MemberCommandRepository memberRepository;
     @Mock
     private AccountManager accountManager;
     @Mock

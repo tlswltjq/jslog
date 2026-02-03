@@ -1,6 +1,6 @@
 package com.jslog_spring.member.application;
 
-import com.jslog_spring.member.domain.repository.MemberRepository;
+import com.jslog_spring.member.domain.repository.MemberCommandRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,7 +15,7 @@ import static org.mockito.Mockito.verify;
 class WithdrawTest {
 
     @Mock
-    private MemberRepository memberRepository;
+    private MemberCommandRepository memberRepository;
 
     @InjectMocks
     private Withdraw withdraw;

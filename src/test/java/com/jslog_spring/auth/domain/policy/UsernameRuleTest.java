@@ -1,7 +1,7 @@
 package com.jslog_spring.auth.domain.policy;
 
 import com.jslog_spring.auth.domain.model.UsernamePasswordAccount;
-import com.jslog_spring.auth.domain.repository.UsernamePasswordAccountRepository;
+import com.jslog_spring.auth.domain.repository.UsernamePasswordAccountQueryRepository;
 import com.jslog_spring.auth.exception.UsernameDuplicationException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,7 @@ import static org.mockito.Mockito.when;
 class UsernameRuleTest {
 
     @Mock
-    private UsernamePasswordAccountRepository accountRepository;
+    private UsernamePasswordAccountQueryRepository accountRepository;
 
     @InjectMocks
     private UsernameRule usernameRule;

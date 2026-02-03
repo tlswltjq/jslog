@@ -1,7 +1,7 @@
 package com.jslog_spring.member.domain.policy;
 
 import com.jslog_spring.member.domain.model.Member;
-import com.jslog_spring.member.domain.repository.MemberRepository;
+import com.jslog_spring.member.domain.repository.MemberQueryRepository;
 import com.jslog_spring.member.exception.NicknameDuplicationException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,7 +17,7 @@ import static org.mockito.Mockito.*;
 class NicknameRuleTest {
 
     @Mock
-    private MemberRepository memberRepository;
+    private MemberQueryRepository memberRepository;
 
     @InjectMocks
     private NicknameRule nicknameRule;

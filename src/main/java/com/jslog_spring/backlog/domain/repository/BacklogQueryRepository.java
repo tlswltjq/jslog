@@ -5,14 +5,10 @@ import com.jslog_spring.backlog.domain.model.Backlog;
 
 import java.util.List;
 
-public interface BacklogRepository {
-    Backlog save(Backlog backLog);
-
+public interface BacklogQueryRepository {
     Backlog findById(Long id);
 
     BacklogInfo findInfoByIdAndOwner(Long id, Long owner);
 
     List<BacklogInfo> findAllInfoByOwnedBy(Long ownedBy);
-
-    void delete(Long id);
 }
